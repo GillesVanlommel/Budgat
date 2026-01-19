@@ -57,17 +57,18 @@ export async function handleAuth(type) {
   }
 }
 
-// LOGOUT LOGIC (Moved to a dynamic listener check or keep it global if the element exists)
-// Since logoutBtn is now inside a view that might be hidden, we can attach the listener safely
-// The button is in the HTML, so this works:
-const logoutBtn = document.getElementById('logoutBtn');
-if (logoutBtn) {
-  logoutBtn.onclick = async () => {
-    const { error } = await db.auth.signOut();
-    if (error) {
-      alert(error.message);
-    } else {
-      window.location.reload();
-    }
-  };
+// 4. SETUP LOGOUT LISTENER
+// Export this function so we can call it after views are loaded
+export function setupLogoutListener() {
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.onclick = async () => {
+      const { error } = await db.auth.signOut();
+      if (error) {
+        alert(error.message);
+      } else {
+        window.location.reload();
+      }
+    };
+  }
 }

@@ -1,0 +1,20 @@
+<div class="space-y-6">
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-4 text-slate-700">Add Transaction</h2>
+    <div class="space-y-3">
+      <input type="date" id="date" class="w-full p-2 border rounded-lg text-slate-700">
+      <input type="text" id="description" placeholder="What (Description)" class="w-full p-2 border rounded-lg">
+      <select id="categorySelect" class="w-full p-2 border rounded-lg">
+        <option value="">Select a Category</option>
+      </select>
+      <input type="number" id="amount" placeholder="Amount (€)" class="w-full p-2 border rounded-lg">
+      <input type="text" id="remark" placeholder="Remark (Optional)" class="w-full p-2 border rounded-lg">
+      <button onclick="addTransaction()" class="w-full bg-emerald-500 text-white py-2 rounded-lg font-medium hover:bg-emerald-600 transition">Save Transaction</button>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-4 text-slate-700">Recent Spending</h2>
+    <ul id="transactionList" class="divide-y divide-slate-100"></ul>
+  </div>
+</div>
