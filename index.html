@@ -1,16 +1,117 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickBudget</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
 
-<script>
-  const supabaseUrl = 'https://your-project-url.supabase.co'
-  const supabaseKey = 'your-anon-public-key'
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+    <div class="max-w-md mx-auto p-6">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-indigo-600">QuickBudget</h1>
+            <button id="logoutBtn" class="hidden text-sm text-red-500 underline">Logout</button>
+        </header>
 
-  async function getTransactions() {
-    // This one line replaces an entire FastAPI route!
-    const { data, error } = await supabase
-      .from('transactions')
-      .select('*')
-    
-    console.log(data)
-  }
-</script>
+        <div id="authSection" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            <h2 class="text-lg font-semibold mb-4">Login or Sign Up</h2>
+            <input type="email" id="email" placeholder="Email" class="w-full p-2 mb-3 border rounded-lg">
+            <input type="password" id="password" placeholder="Password" class="w-full p-2 mb-4 border rounded-lg">
+            <button onclick="handleAuth('login')" class="w-full bg-indigo-600 text-white py-2 rounded-lg mb-2 hover:bg-indigo-700">Login</button>
+            <button onclick="handleAuth('signup')" class="w-full border border-indigo-600 text-indigo-600 py-2 rounded-lg hover:bg-indigo-50">Sign Up</button>
+        </div>
+
+        <div id="appSection" class="hidden space-y-6">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold mb-4 text-slate-700">Add Transaction</h2>
+                <div class="space-y-3">
+                    <input type="number" id="amount" placeholder="Amount ($)" class="w-full p-2 border rounded-lg">
+                    <input type="text" id="category" placeholder="Category (e.g. Food)" class="w-full p-2 border rounded-lg">
+                    <button onclick="addTransaction()" class="w-full bg-emerald-500 text-white py-2 rounded-lg font-medium hover:bg-emerald-600 transition">Save Transaction</button>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold mb-4 text-slate-700">Recent Spending</h2>
+                <ul id="transactionList" class="divide-y divide-slate-100">
+                    </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const SUPABASE_URL = 'YOUR_SUPABASE_PROJECT_URL';
+        const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        const authSection = document.getElementById('authSection');
+        const appSection = document.getElementById('appSection');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // --- AUTH LOGIC ---
+        async function handleAuth(type) {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { data, error } = type === 'login' 
+                ? await supabase.auth.signInWithPassword({ email, password })
+                : await supabase.auth.signUp({ email, password });
+
+            if (error) alert(error.message);
+            else checkUser();
+        }
+
+        async function checkUser() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                authSection.classList.add('hidden');
+                appSection.classList.remove('hidden');
+                logoutBtn.classList.remove('hidden');
+                loadTransactions();
+            }
+        }
+
+        logoutBtn.onclick = async () => {
+            await supabase.auth.signOut();
+            location.reload();
+        };
+
+        // --- DATABASE LOGIC ---
+        async function addTransaction() {
+            const amount = document.getElementById('amount').value;
+            const category = document.getElementById('category').value;
+            const { data: { user } } = await supabase.auth.getUser();
+
+            const { error } = await supabase
+                .from('transactions')
+                .insert([{ amount, category, user_id: user.id }]);
+
+            if (error) alert(error.message);
+            else {
+                document.getElementById('amount').value = '';
+                document.getElementById('category').value = '';
+                loadTransactions();
+            }
+        }
+
+        async function loadTransactions() {
+            const { data, error } = await supabase
+                .from('transactions')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            const list = document.getElementById('transactionList');
+            list.innerHTML = data.map(t => `
+                <li class="py-3 flex justify-between">
+                    <span class="font-medium text-slate-700">${t.category}</span>
+                    <span class="text-slate-500">$${t.amount}</span>
+                </li>
+            `).join('');
+        }
+
+        checkUser(); // Run on page load
+    </script>
+</body>
+</html>
