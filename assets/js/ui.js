@@ -1,7 +1,7 @@
 // budgat/assets/js/ui.js
 
 // 1. Define the available views
-const views = ['view-add', 'view-budget', 'view-graphs', 'view-settings'];
+const views = ['view-add', 'view-history', 'view-budget', 'view-graphs', 'view-settings'];
 
 export function initNavigation() {
   // Attach click listeners to the bottom nav buttons
@@ -19,18 +19,25 @@ export function initNavigation() {
 }
 
 export function switchView(targetId) {
-  // 1. Hide all views
+  // 1. Hide all
   views.forEach(id => {
-    document.getElementById(id).classList.add('hidden');
+    const el = document.getElementById(id);
+    if(el) el.classList.add('hidden');
   });
 
-  // 2. Show target view
+  // 2. Show target
   const targetElement = document.getElementById(targetId);
   if (targetElement) {
     targetElement.classList.remove('hidden');
-    if (targetId === 'view-budget' && window.loadBudget) {
-      window.loadBudget();
-    }
+
+    // Trigger specific loads
+    if (targetId === 'view-budget' && window.loadBudget) window.loadBudget();
+    
+    // NEW: Load history when tab is clicked
+    if (targetId === 'view-history' && window.loadAllTransactions) window.loadAllTransactions();
+    
+    // Refresh recent list if going back to add
+    if (targetId === 'view-add' && window.loadRecentTransactions) window.loadRecentTransactions();
   }
 
   // 3. Update Bottom Nav Active State

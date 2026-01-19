@@ -1,6 +1,6 @@
 import { db } from './database.js';
 import { loadCategories } from './categories.js';
-import { loadTransactions } from './transactions.js';
+import { loadRecentTransactions } from './transactions.js';
 import { initNavigation } from './ui.js'; // Import navigation logic
 
 const authSection = document.getElementById('authSection');
@@ -22,7 +22,7 @@ export async function checkUser() {
 
     // Load Data
     loadCategories();
-    loadTransactions();
+    loadRecentTransactions();
     
     // Initialize UI (Navigation Tabs)
     initNavigation();

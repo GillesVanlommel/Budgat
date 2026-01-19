@@ -1,7 +1,10 @@
 <div class="space-y-6">
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 class="text-lg font-semibold mb-4 text-slate-700">Add Transaction</h2>
+    <h2 id="formTitle" class="text-lg font-semibold mb-4 text-slate-700">Add Transaction</h2>
     <div class="space-y-3">
+      
+      <input type="hidden" id="transactionId">
+      
       <input type="date" id="date" class="w-full p-2 border rounded-lg text-slate-700">
       <input type="text" id="description" placeholder="What (Description)" class="w-full p-2 border rounded-lg">
       <select id="categorySelect" class="w-full p-2 border rounded-lg">
@@ -9,7 +12,12 @@
       </select>
       <input type="number" id="amount" placeholder="Amount (€)" class="w-full p-2 border rounded-lg">
       <input type="text" id="remark" placeholder="Remark (Optional)" class="w-full p-2 border rounded-lg">
-      <button onclick="addTransaction()" class="w-full bg-emerald-500 text-white py-2 rounded-lg font-medium hover:bg-emerald-600 transition">Save Transaction</button>
+      
+      <div class="flex gap-2">
+        <button id="saveBtn" onclick="saveTransaction()" class="flex-1 bg-emerald-500 text-white py-2 rounded-lg font-medium hover:bg-emerald-600 transition">Save Transaction</button>
+        
+        <button id="cancelBtn" onclick="cancelEdit()" class="hidden w-1/3 bg-slate-200 text-slate-600 py-2 rounded-lg font-medium hover:bg-slate-300 transition">Cancel</button>
+      </div>
     </div>
   </div>
 

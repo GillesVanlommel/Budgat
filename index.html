@@ -13,7 +13,7 @@
 
   <div class="max-w-md mx-auto p-6 pb-24">
     <header class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-indigo-600">QuickBudget</h1>
+      <h1 class="text-2xl font-bold text-indigo-600">BudgetPlanner</h1>
     </header>
 
     <div id="authSection" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -28,6 +28,7 @@
 
     <div id="appSection" class="hidden">
       <div id="view-add"></div>
+      <div id="view-history" class="hidden"></div>
       <div id="view-budget" class="hidden"></div>
       <div id="view-graphs" class="hidden"></div>
       <div id="view-settings" class="hidden"></div>
@@ -42,6 +43,13 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
       </svg>
       <span class="text-xs font-medium">Add</span>
+    </button>
+    <button class="nav-btn flex flex-col items-center gap-1 text-slate-400" data-target="view-history">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+      </svg>
+      <span class="text-xs font-medium">History</span>
     </button>
     <button class="nav-btn flex flex-col items-center gap-1 text-slate-400" data-target="view-budget">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
@@ -73,16 +81,20 @@
   <script type="module">
     import { checkUser, handleAuth, setupLogoutListener } from './assets/js/auth.js';
     import { addCategory, deleteCategory, loadCategories } from './assets/js/categories.js';
-    import { addTransaction } from './assets/js/transactions.js';
-    import { initNavigation } from './assets/js/ui.js';
+    import { saveTransaction, loadRecentTransactions, loadAllTransactions, editTransaction, cancelEdit, deleteTransaction } from './assets/js/transactions.js'; import { initNavigation } from './assets/js/ui.js';
     import { loadViews } from './assets/js/loader.js';
     import { loadBudget } from './assets/js/budget.js';
 
     // 1. Attach window functions
+    window.saveTransaction = saveTransaction;
+    window.editTransaction = editTransaction;
+    window.cancelEdit = cancelEdit;
+    window.deleteTransaction = deleteTransaction;
     window.addCategory = addCategory;
     window.deleteCategory = deleteCategory;
-    window.addTransaction = addTransaction;
     window.loadBudget = loadBudget;
+    window.loadRecentTransactions = loadRecentTransactions;
+    window.loadAllTransactions = loadAllTransactions;
 
     // 2. Attach Auth listeners
     document.getElementById('loginBtn').addEventListener('click', () => handleAuth('login'));
@@ -94,14 +106,7 @@
       setupLogoutListener();
       initNavigation();
       checkUser();
-
-      // Optional: Update the month label in the budget view immediately
-      const monthNames = ["January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-      ];
-      const d = new Date();
-      const label = document.getElementById('currentMonthLabel');
-      if (label) label.innerText = `Overview for ${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+      loadRecentTransactions(); 
     }
 
     initApp();
