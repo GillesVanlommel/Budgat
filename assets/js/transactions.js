@@ -2,37 +2,42 @@ import { db } from './database.js';
 
 // 1. ADD TRANSACTION
 export async function addTransaction() {
-  const amount = document.getElementById('amount').value;
+  // Get all values based on your new order
+  const date = document.getElementById('date').value;
+  const description = document.getElementById('description').value;
   const category = document.getElementById('categorySelect').value;
+  const amount = document.getElementById('amount').value;
+  const remark = document.getElementById('remark').value; // Optional
   
-  // Get current user
   const { data: { user } } = await db.auth.getUser();
 
-  if (!category) {
-    alert("Please select a category first!");
-    return;
-  }
-  
-  if (!amount) {
-    alert("Please enter an amount!");
-    return;
-  }
+  // Validate required fields
+  if (!date) { alert("Please select a date!"); return; }
+  if (!description) { alert("Please enter a description!"); return; }
+  if (!category) { alert("Please select a category!"); return; }
+  if (!amount) { alert("Please enter an amount!"); return; }
 
   const { error } = await db
     .from('transactions')
     .insert([{ 
-      amount: parseFloat(amount), 
+      date: date,
+      description: description,
       category: category, 
+      amount: parseFloat(amount),
+      remark: remark,
       user_id: user.id 
     }]);
 
   if (error) {
     alert(error.message);
   } else {
-    // Clear the form
+    // Clear the form fields
+    document.getElementById('date').value = '';
+    document.getElementById('description').value = '';
+    document.getElementById('categorySelect').value = '';
     document.getElementById('amount').value = '';
+    document.getElementById('remark').value = '';
     
-    // Refresh the list
     loadTransactions();
   }
 }
@@ -42,7 +47,8 @@ export async function loadTransactions() {
   const { data, error } = await db
     .from('transactions')
     .select('*')
-    .order('created_at', { ascending: false });
+    // Order by the new 'date' column instead of created_at
+    .order('date', { ascending: false });
 
   if (error) {
     console.error(error);
@@ -56,10 +62,17 @@ export async function loadTransactions() {
     return;
   }
 
+  // Updated display to show Date and Description
   list.innerHTML = data.map(t => `
-    <li class="py-3 flex justify-between border-b border-slate-100 last:border-0">
-        <span class="font-medium text-slate-700">${t.category}</span>
-        <span class="text-slate-500 font-mono">€${parseFloat(t.amount).toFixed(2)}</span>
+    <li class="py-3 flex justify-between items-center border-b border-slate-100 last:border-0">
+        <div>
+          <div class="font-medium text-slate-800">${t.description}</div>
+          <div class="text-xs text-slate-500">
+            ${t.date} • <span class="text-indigo-600 font-medium">${t.category}</span>
+            ${t.remark ? `• <span class="italic text-slate-400">${t.remark}</span>` : ''}
+          </div>
+        </div>
+        <span class="text-slate-700 font-mono font-bold">€${parseFloat(t.amount).toFixed(2)}</span>
     </li>
   `).join('');
 }
