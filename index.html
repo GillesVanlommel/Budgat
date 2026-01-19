@@ -45,7 +45,7 @@
         // --- CONFIGURATION ---
         const SUPABASE_URL = 'https://grbzwllccthgbkkjeaur.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_uFqBlBP73HzrvGurqgHxrw_Hc3VFRGl';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const supabaseClient = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         const authSection = document.getElementById('authSection');
         const appSection = document.getElementById('appSection');
@@ -56,15 +56,15 @@
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const { data, error } = type === 'login' 
-                ? await supabase.auth.signInWithPassword({ email, password })
-                : await supabase.auth.signUp({ email, password });
+                ? await supabaseClient.auth.signInWithPassword({ email, password })
+                : await supabaseClient.auth.signUp({ email, password });
 
             if (error) alert(error.message);
             else checkUser();
         }
 
         async function checkUser() {
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
             if (user) {
                 authSection.classList.add('hidden');
                 appSection.classList.remove('hidden');
@@ -74,7 +74,7 @@
         }
 
         logoutBtn.onclick = async () => {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             location.reload();
         };
 
@@ -82,9 +82,9 @@
         async function addTransaction() {
             const amount = document.getElementById('amount').value;
             const category = document.getElementById('category').value;
-            const { data: { user } } = await supabase.auth.getUser();
+            const { data: { user } } = await supabaseClient.auth.getUser();
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('transactions')
                 .insert([{ amount, category, user_id: user.id }]);
 
@@ -97,7 +97,7 @@
         }
 
         async function loadTransactions() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('transactions')
                 .select('*')
                 .order('created_at', { ascending: false });
