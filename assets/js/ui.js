@@ -28,6 +28,9 @@ export function switchView(targetId) {
   const targetElement = document.getElementById(targetId);
   if (targetElement) {
     targetElement.classList.remove('hidden');
+    if (targetId === 'view-budget' && window.loadBudget) {
+      window.loadBudget();
+    }
   }
 
   // 3. Update Bottom Nav Active State
