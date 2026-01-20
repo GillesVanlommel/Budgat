@@ -1,9 +1,50 @@
-<div class="text-center py-10">
-  <div class="bg-indigo-50 p-6 rounded-full inline-block mb-4">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 text-indigo-600">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
-    </svg>
+<div class="space-y-6 pb-20">
+  <header>
+    <h2 class="text-xl font-bold text-slate-700">Analytics Dashboard</h2>
+    <p class="text-slate-500 text-sm">Find problems at a glance</p>
+  </header>
+
+  <div class="grid grid-cols-3 gap-2 sm:gap-4">
+    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
+      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Spent</p>
+      <div id="metricTotal" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
+    </div>
+    
+    <div id="cardStatus" class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center transition-colors duration-500">
+      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Status</p>
+      <div id="metricStatus" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
+    </div>
+    
+    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
+      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Trend</p>
+      <div id="metricTrend" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
+    </div>
   </div>
-  <h2 class="text-xl font-bold text-slate-700 mb-2">Analytics</h2>
-  <p class="text-slate-500">Visual graphs and trends coming soon!!!</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+      <h3 class="font-bold text-slate-700 mb-4 text-sm">Where is money going?</h3>
+      <div class="relative h-64 w-full">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </div>
+
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+      <h3 class="font-bold text-slate-700 mb-4 text-sm">6-Month Trend</h3>
+      <div class="relative h-64 w-full">
+        <canvas id="historyChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+    <h3 class="font-bold text-slate-700 mb-4 text-sm">This Month's Pace (Cumulative)</h3>
+    <div class="relative h-64 w-full">
+      <canvas id="dailyChart"></canvas>
+    </div>
+    <p class="text-xs text-center text-slate-400 mt-2 italic">Steep jumps = Big expenses</p>
+  </div>
+
 </div>

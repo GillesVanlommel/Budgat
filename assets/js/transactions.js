@@ -9,7 +9,7 @@ export async function saveTransaction() {
   const category = document.getElementById('categorySelect').value;
   const amount = document.getElementById('amount').value;
   const remark = document.getElementById('remark').value;
-  
+
   const { data: { user } } = await db.auth.getUser();
 
   if (!date || !description || !category || !amount) {
@@ -31,10 +31,10 @@ export async function saveTransaction() {
   if (error) {
     alert(error.message);
   } else {
-    cancelEdit(); 
-    loadRecentTransactions(); 
-    if(window.loadAllTransactions) window.loadAllTransactions();
-    if(window.loadBudget) window.loadBudget();
+    cancelEdit();
+    loadRecentTransactions();
+    if (window.loadAllTransactions) window.loadAllTransactions();
+    if (window.loadBudget) window.loadBudget();
   }
 }
 
@@ -85,16 +85,16 @@ function renderHistoryGrouped(data, elementId) {
   }
 
   const monthlyData = {};
-  
+
   data.forEach(t => {
     const [year, month, day] = t.date.split('-').map(Number);
-    const dateObj = new Date(year, month - 1, day); 
+    const dateObj = new Date(year, month - 1, day);
     const monthKey = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
     if (!monthlyData[monthKey]) {
       monthlyData[monthKey] = { total: 0, items: [] };
     }
-    monthlyData[monthKey].items.push({ ...t, dateObj }); 
+    monthlyData[monthKey].items.push({ ...t, dateObj });
     monthlyData[monthKey].total += parseFloat(t.amount);
   });
 
@@ -107,10 +107,10 @@ function renderHistoryGrouped(data, elementId) {
     const monthLabel = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
 
     if (monthLabel !== currentMonth) {
-      if (currentMonth !== null) html += '</ul></div>'; 
+      if (currentMonth !== null) html += '</ul></div>';
 
       const total = monthlyData[monthLabel].total;
-      
+
       // CHANGED: Added classes for horizontal layout (min-w, snap-center)
       html += `
         <div class="snap-center shrink-0 bg-white p-5 rounded-xl shadow-sm border border-slate-200 h-fit 
@@ -163,22 +163,25 @@ function renderHistoryGrouped(data, elementId) {
   });
 
   if (currentMonth !== null) html += '</ul></div>';
-  
+
   container.innerHTML = html;
 }
 
+// 4. Load the recent 10 transactions
 export async function loadRecentTransactions() {
   const { data, error } = await db.from('transactions').select('*').order('date', { ascending: false }).order('created_at', { ascending: false }).limit(10);
   if (error) return;
   renderList(data, 'transactionList');
 }
 
+// 5. Load all the transactions
 export async function loadAllTransactions() {
   const { data, error } = await db.from('transactions').select('*').order('date', { ascending: false }).order('created_at', { ascending: false });
   if (error) return;
   renderHistoryGrouped(data, 'fullTransactionList');
 }
 
+// 6. Edit a certain transaction
 export async function editTransaction(id) {
   const { data, error } = await db.from('transactions').select('*').eq('id', id).single();
   if (error) { alert("Error loading transaction."); return; }
@@ -198,13 +201,21 @@ export async function editTransaction(id) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+// 7. Cancelling the editing of a transaction --> Also used to put the current date in date input of add field
 export function cancelEdit() {
   document.getElementById('transactionId').value = '';
-  document.getElementById('date').value = '';
+  // 1. SET DATE TO TODAY
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  document.getElementById('date').value = `${year}-${month}-${day}`;
+  // 2. Clear other fields
   document.getElementById('description').value = '';
   document.getElementById('categorySelect').value = '';
   document.getElementById('amount').value = '';
   document.getElementById('remark').value = '';
+  // 3. Reset Buttons
   document.getElementById('formTitle').innerText = 'Add Transaction';
   const saveBtn = document.getElementById('saveBtn');
   saveBtn.innerText = 'Save Transaction';
@@ -213,6 +224,7 @@ export function cancelEdit() {
   document.getElementById('cancelBtn').classList.add('hidden');
 }
 
+// 8. Delete a certain transaction
 export async function deleteTransaction(id) {
   if (!confirm("Are you sure?")) return;
   const { error } = await db.from('transactions').delete().eq('id', id);
@@ -220,7 +232,169 @@ export async function deleteTransaction(id) {
     alert(error.message);
   } else {
     loadRecentTransactions();
-    if(window.loadAllTransactions) window.loadAllTransactions();
-    if(window.loadBudget) window.loadBudget();
+    if (window.loadAllTransactions) window.loadAllTransactions();
+    if (window.loadBudget) window.loadBudget();
   }
+}
+
+// Export all the data to a csv
+export async function exportCSV() {
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return alert("Please login first.");
+
+  // 1. Fetch All Transactions
+  const { data, error } = await db
+    .from('transactions')
+    .select('*')
+    .order('date', { ascending: false });
+
+  if (error) {
+    alert("Error fetching data: " + error.message);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    alert("No transactions to export.");
+    return;
+  }
+
+  // 2. Define Headers (Dutch)
+  const headers = ["WANNEER", "WAT", "HOEVEEL", "CATEGORIE", "OPMERKING"];
+
+  // 3. Map Data to Rows
+  // We wrap fields in quotes to handle commas inside descriptions
+  const csvRows = [headers.join(',')];
+
+  data.forEach(t => {
+    const row = [
+      `"${t.date}"`,
+      `"${(t.description || '').replace(/"/g, '""')}"`, // Escape quotes
+      `"${t.amount}"`,
+      `"${(t.category || '').replace(/"/g, '""')}"`,
+      `"${(t.remark || '').replace(/"/g, '""')}"`
+    ];
+    csvRows.push(row.join(','));
+  });
+
+  // 4. Create File and Download
+  const csvString = csvRows.join('\n');
+  const blob = new Blob([csvString], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.setAttribute('hidden', '');
+  a.setAttribute('href', url);
+  a.setAttribute('download', 'budgat_export.csv');
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// Inport data from a csv into the database
+export async function importCSV() {
+  const fileInput = document.getElementById('csvInput');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please select a CSV file first.");
+    return;
+  }
+
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return alert("Please login first.");
+
+  const reader = new FileReader();
+
+  reader.onload = async function (e) {
+    const text = e.target.result;
+    const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+
+    if (lines.length < 2) {
+      alert("CSV file appears empty or invalid.");
+      return;
+    }
+
+    // Simple CSV parser that handles quoted values
+    // Regex matches: "quoted value" OR value_without_comma
+    const parseCSVLine = (line) => {
+      const regex = /(?:^|,)(?:"([^"]*(?:""[^"]*)*)"|([^",]*))/g;
+      const matches = [];
+      let match;
+      while (match = regex.exec(line)) {
+        // match[1] is quoted content, match[2] is unquoted
+        let val = match[1] !== undefined ? match[1].replace(/""/g, '"') : match[2];
+        matches.push(val);
+      }
+      return matches; // Note: Regex might produce an extra empty match at end, strictly we map indices
+    };
+
+    // We assume standard column order matching the export:
+    // Index 0: WANNEER, 1: WAT, 2: HOEVEEL, 3: CATEGORIE, 4: OPMERKING
+    // Skipping header row (index 0)
+
+    const transactionsToInsert = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      // Use a simpler split if no complex quotes, but robust regex is safer
+      // For simplicity in this environment, let's assume the user uses the format we exported.
+      // Let's try a standard split first, falling back to regex if needed is complex in vanilla JS without lib.
+      // We will stick to the regex approach above which is standard for CSV.
+
+      let cols = parseCSVLine(lines[i]);
+      // Filter out the empty match at the start/end if regex leaves artifacts, 
+      // usually the regex provided above captures groups. 
+      // Let's use a cleaner simple logic:
+
+      // Manual cleanup of quotes if simple split (safer for "Excel lovers" who might just save normally)
+      // If Excel saves it, it usually puts quotes around fields with commas.
+
+      // Re-implementing a safer parser loop:
+      let row = [];
+      let inQuotes = false;
+      let currentVal = '';
+      for (let char of lines[i]) {
+        if (char === '"') { inQuotes = !inQuotes; continue; }
+        if (char === ',' && !inQuotes) { row.push(currentVal); currentVal = ''; continue; }
+        currentVal += char;
+      }
+      row.push(currentVal); // Push last value
+
+      // Map to DB fields
+      // 0: Date, 1: Description, 2: Amount, 3: Category, 4: Remark
+      if (row.length >= 4) {
+        transactionsToInsert.push({
+          user_id: user.id,
+          date: row[0].trim(),
+          description: row[1].trim(),
+          amount: parseFloat(row[2].replace(',', '.')), // Handle 12,50 format if needed
+          category: row[3].trim(),
+          remark: row[4] ? row[4].trim() : ''
+        });
+      }
+    }
+
+    if (transactionsToInsert.length === 0) {
+      alert("No valid rows found to import.");
+      return;
+    }
+
+    if (!confirm(`Found ${transactionsToInsert.length} transactions. Import now?`)) return;
+
+    // Batch Insert
+    const { error } = await db.from('transactions').insert(transactionsToInsert);
+
+    if (error) {
+      alert("Import failed: " + error.message);
+    } else {
+      alert("Success! Imported transactions.");
+      fileInput.value = ''; // Reset input
+      // Refresh views
+      if (window.loadRecentTransactions) window.loadRecentTransactions();
+      if (window.loadAllTransactions) window.loadAllTransactions();
+      if (window.loadBudget) window.loadBudget();
+      if (window.loadGraphs) window.loadGraphs();
+    }
+  };
+
+  reader.readAsText(file);
 }

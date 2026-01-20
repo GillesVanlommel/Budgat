@@ -7,6 +7,7 @@
   <title>QuickBudget</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="bg-slate-50 text-slate-900 font-sans">
@@ -28,7 +29,7 @@
 
     <div id="appSection" class="hidden">
       <div id="view-add"></div>
-      <div id="view-history" class="hidden"></div>
+      <div id="view-history" class="hidden h-full"></div>
       <div id="view-budget" class="hidden"></div>
       <div id="view-graphs" class="hidden"></div>
       <div id="view-settings" class="hidden"></div>
@@ -81,9 +82,14 @@
   <script type="module">
     import { checkUser, handleAuth, setupLogoutListener } from './assets/js/auth.js';
     import { addCategory, deleteCategory, loadCategories } from './assets/js/categories.js';
-    import { saveTransaction, loadRecentTransactions, loadAllTransactions, editTransaction, cancelEdit, deleteTransaction } from './assets/js/transactions.js'; import { initNavigation } from './assets/js/ui.js';
+    import { 
+      saveTransaction, loadRecentTransactions, loadAllTransactions, 
+      editTransaction, cancelEdit, deleteTransaction, exportCSV, importCSV
+    } from './assets/js/transactions.js'; 
+    import { initNavigation } from './assets/js/ui.js';
     import { loadViews } from './assets/js/loader.js';
     import { loadBudget } from './assets/js/budget.js';
+    import { loadGraphs } from './assets/js/graphs.js';
 
     // 1. Attach window functions
     window.saveTransaction = saveTransaction;
@@ -95,6 +101,9 @@
     window.loadBudget = loadBudget;
     window.loadRecentTransactions = loadRecentTransactions;
     window.loadAllTransactions = loadAllTransactions;
+    window.loadGraphs = loadGraphs;
+    window.exportCSV = exportCSV;
+    window.importCSV = importCSV;
 
     // 2. Attach Auth listeners
     document.getElementById('loginBtn').addEventListener('click', () => handleAuth('login'));
@@ -107,6 +116,7 @@
       initNavigation();
       checkUser();
       loadRecentTransactions(); 
+      cancelEdit();
     }
 
     initApp();

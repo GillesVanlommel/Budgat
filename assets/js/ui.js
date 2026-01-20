@@ -33,11 +33,14 @@ export function switchView(targetId) {
     // Trigger specific loads
     if (targetId === 'view-budget' && window.loadBudget) window.loadBudget();
     
-    // NEW: Load history when tab is clicked
+    // Load history when tab is clicked
     if (targetId === 'view-history' && window.loadAllTransactions) window.loadAllTransactions();
     
     // Refresh recent list if going back to add
     if (targetId === 'view-add' && window.loadRecentTransactions) window.loadRecentTransactions();
+
+    // Load Graphs
+    if (targetId === 'view-graphs' && window.loadGraphs) window.loadGraphs();
   }
 
   // 3. Update Bottom Nav Active State
