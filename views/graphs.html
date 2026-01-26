@@ -1,7 +1,12 @@
 <div class="space-y-6 pb-20">
-  <header>
-    <h2 class="text-xl font-bold text-slate-700">Analytics Dashboard</h2>
-    <p class="text-slate-500 text-sm">Find problems at a glance</p>
+  <header class="flex justify-between items-center">
+    <div>
+      <h2 class="text-xl font-bold text-slate-700">Analytics Dashboard</h2>
+      <p class="text-slate-500 text-sm">Find problems at a glance</p>
+    </div>
+    <input type="month" id="graphMonthSelector" 
+           class="p-2 border rounded-lg text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
+           onchange="loadGraphs()">
   </header>
 
   <div class="grid grid-cols-3 gap-2 sm:gap-4">
@@ -9,27 +14,25 @@
       <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Spent</p>
       <div id="metricTotal" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
     </div>
-    
+
     <div id="cardStatus" class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center transition-colors duration-500">
       <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Status</p>
       <div id="metricStatus" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
     </div>
-    
+
     <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
       <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Trend</p>
       <div id="metricTrend" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    
-    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-      <h3 class="font-bold text-slate-700 mb-4 text-sm">Where is money going?</h3>
-      <div class="relative h-64 w-full">
-        <canvas id="categoryChart"></canvas>
-      </div>
-    </div>
+  <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 w-full">
+    <h3 class="font-bold text-slate-700 mb-4 text-sm">Money Flow (Sankey)</h3>
+    <div id="sankey_chart" class="w-full h-80 sm:h-96"></div>
+    <p class="text-xs text-center text-slate-400 mt-2 italic">Shows flow from Total Spent to Categories</p>
+  </div>
 
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
       <h3 class="font-bold text-slate-700 mb-4 text-sm">6-Month Trend</h3>
       <div class="relative h-64 w-full">
@@ -37,14 +40,13 @@
       </div>
     </div>
 
-  </div>
-
-  <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-    <h3 class="font-bold text-slate-700 mb-4 text-sm">This Month's Pace (Cumulative)</h3>
-    <div class="relative h-64 w-full">
-      <canvas id="dailyChart"></canvas>
+    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+      <h3 class="font-bold text-slate-700 mb-4 text-sm">This Month's Pace (Cumulative)</h3>
+      <div class="relative h-64 w-full">
+        <canvas id="dailyChart"></canvas>
+      </div>
+      <p class="text-xs text-center text-slate-400 mt-2 italic">Steep jumps = Big expenses</p>
     </div>
-    <p class="text-xs text-center text-slate-400 mt-2 italic">Steep jumps = Big expenses</p>
   </div>
 
 </div>

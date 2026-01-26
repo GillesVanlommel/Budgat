@@ -1,86 +1,116 @@
 import { db } from './database.js';
 
+async function ensureMonthlyBudget(categoryId, defaultAmount, monthKey) {
+  const { data: { user } } = await db.auth.getUser();
+
+  const { data: existing } = await db
+    .from('monthly_budgets')
+    .select('*')
+    .eq('category_id', categoryId)
+    .eq('month', monthKey)
+    .single();
+
+  if (existing) return existing.amount;
+
+  const { data: newRecord, error } = await db
+    .from('monthly_budgets')
+    .insert([{
+      user_id: user.id,
+      category_id: categoryId,
+      month: monthKey,
+      amount: defaultAmount
+    }])
+    .select()
+    .single();
+
+  if (error) console.error("Error creating monthly budget", error);
+  return newRecord ? newRecord.amount : defaultAmount;
+}
+
 export async function loadBudget() {
   const container = document.getElementById('budgetContainer');
-  if (!container) return; // Safety check
+  if (!container) return;
 
-  // 1. Get Dates for Current Month
-  const date = new Date();
-  const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).toISOString();
-  // We use ISO strings for Supabase comparison
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-  // 2. Fetch Categories (with their budgets)
-  const { data: categories, error: catError } = await db
-    .from('categories')
-    .select('*')
-    .order('name');
+  const { data: categories } = await db.from('categories').select('*');
+  const { data: allTransactions } = await db.from('transactions').select('category, amount, date');
+  const { data: allBudgetHistory } = await db.from('monthly_budgets').select('*');
+
+  let totalBudgetPlan = 0;
+  let currentMonthNet = 0;
   
-  // 3. Fetch Transactions (only for this month)
-  const { data: transactions, error: transError } = await db
-    .from('transactions')
-    .select('*')
-    .gte('date', firstDay); // "Greater than or equal to" 1st of month
+  const budgetHTML = await Promise.all(categories.map(async (cat) => {
+      const thisMonthBudget = await ensureMonthlyBudget(cat.id, cat.monthly_budget, currentMonthKey);
+      
+      totalBudgetPlan += parseFloat(thisMonthBudget);
 
-  if (catError || transError) {
-    console.error("Error loading budget data");
-    return;
-  }
+      const catHistory = allBudgetHistory ? allBudgetHistory.filter(h => h.category_id === cat.id) : [];
+      let totalBudgetedLifetime = catHistory.reduce((sum, h) => sum + parseFloat(h.amount), 0);
+      
+      const alreadyInHistory = catHistory.find(h => h.month === currentMonthKey);
+      if (!alreadyInHistory) totalBudgetedLifetime += parseFloat(thisMonthBudget);
 
-  // 4. Calculate Totals
-  // Create a map to store spending: { "Groceries": 150.00, "Rent": 800.00 }
-  const spendingMap = {};
-  
-  transactions.forEach(t => {
-    // If we haven't seen this category yet, init to 0
-    if (!spendingMap[t.category]) spendingMap[t.category] = 0;
-    spendingMap[t.category] += parseFloat(t.amount);
-  });
+      const totalNetVal = allTransactions
+          .filter(t => t.category === cat.name)
+          .reduce((sum, t) => sum + parseFloat(t.amount), 0);
 
-  // 5. Generate HTML
-  if (categories.length === 0) {
-    container.innerHTML = '<p class="text-center text-slate-400 mt-10">No categories set up yet.</p>';
-    return;
-  }
+      const available = totalBudgetedLifetime - totalNetVal;
+      
+      const monthNetVal = allTransactions
+        .filter(t => t.category === cat.name && t.date.startsWith(currentMonthKey))
+        .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+      
+      currentMonthNet += monthNetVal;
 
-  container.innerHTML = categories.map(cat => {
-    const spent = spendingMap[cat.name] || 0;
-    const limit = parseFloat(cat.monthly_budget) || 0;
-    
-    // Avoid division by zero
-    let percentage = 0;
-    if (limit > 0) {
-      percentage = (spent / limit) * 100;
-    }
-    
-    // Determine Color
-    let colorClass = 'bg-emerald-500'; // Green (Safe)
-    if (percentage >= 80) colorClass = 'bg-yellow-400'; // Warning
-    if (percentage >= 100) colorClass = 'bg-red-500';   // Danger/Over
+      let pct = 0;
+      if (Math.abs(thisMonthBudget) > 0) {
+        pct = (Math.abs(monthNetVal) / Math.abs(thisMonthBudget)) * 100;
+      }
 
-    // Cap the visual bar at 100% so it doesn't break layout
-    const visualWidth = Math.min(percentage, 100);
+      let labelColor, barColor, labelText;
 
-    return `
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-        
-        <div class="flex justify-between items-end mb-2">
-          <h3 class="font-bold text-slate-700">${cat.name}</h3>
-          <div class="text-right">
-            <span class="text-sm font-semibold ${spent > limit ? 'text-red-500' : 'text-slate-700'}">€${spent.toFixed(2)}</span>
-            <span class="text-xs text-slate-400"> / €${limit.toFixed(2)}</span>
+      if (available < 0) {
+          labelColor = 'text-red-500';
+          barColor = 'bg-red-500';
+          labelText = `€${Math.abs(available).toFixed(2)} ${thisMonthBudget < 0 ? 'to go' : 'Over'}`;
+      } else {
+          labelColor = 'text-emerald-500';
+          barColor = 'bg-indigo-500';
+          labelText = `€${available.toFixed(2)} ${thisMonthBudget < 0 ? 'Surplus' : 'Left'}`;
+      }
+
+      return `
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 mb-4">
+          <div class="flex justify-between items-end mb-2">
+            <h3 class="font-bold text-slate-700">${cat.name}</h3>
+            <div class="text-right">
+              <span class="text-sm font-bold ${labelColor}">${labelText}</span>
+              <span class="text-xs text-slate-400 block">Plan: €${thisMonthBudget} + Rollover</span>
+            </div>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+             <div class="${barColor} h-3 rounded-full" style="width: ${Math.min(pct, 100)}%"></div>
           </div>
         </div>
+      `;
+  }));
 
-        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
-          <div class="${colorClass} h-3 rounded-full transition-all duration-500" 
-               style="width: ${visualWidth}%"></div>
-        </div>
+  container.innerHTML = budgetHTML.join('');
 
-        <div class="mt-1 text-xs text-right ${percentage >= 100 ? 'text-red-500 font-bold' : 'text-slate-400'}">
-          ${percentage.toFixed(0)}% Used
-        </div>
-
+  const headerEl = document.querySelector('#view-budget h2');
+  if (headerEl) {
+    headerEl.innerHTML = `
+      <div class="flex flex-col sm:flex-row sm:items-baseline gap-2">
+        <span>Monthly Budget</span>
+        <span class="text-sm font-normal text-slate-400">
+          (Net Plan: €${totalBudgetPlan.toFixed(0)}) 
+          <span class="${currentMonthNet > totalBudgetPlan ? 'text-red-500' : 'text-emerald-500'} font-bold">
+            Actual: €${currentMonthNet.toFixed(0)}
+          </span>
+        </span>
       </div>
     `;
-  }).join('');
+  }
 }

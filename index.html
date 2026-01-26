@@ -8,6 +8,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 
 <body class="bg-slate-50 text-slate-900 font-sans">
@@ -81,11 +82,11 @@
 
   <script type="module">
     import { checkUser, handleAuth, setupLogoutListener } from './assets/js/auth.js';
-    import { addCategory, deleteCategory, loadCategories } from './assets/js/categories.js';
-    import { 
-      saveTransaction, loadRecentTransactions, loadAllTransactions, 
+    import { addCategory, deleteCategory, loadCategories, editCategory } from './assets/js/categories.js';
+    import {
+      saveTransaction, loadRecentTransactions, loadAllTransactions, setHistoryTypeFilter,
       editTransaction, cancelEdit, deleteTransaction, exportCSV, importCSV
-    } from './assets/js/transactions.js'; 
+    } from './assets/js/transactions.js';
     import { initNavigation } from './assets/js/ui.js';
     import { loadViews } from './assets/js/loader.js';
     import { loadBudget } from './assets/js/budget.js';
@@ -97,6 +98,7 @@
     window.cancelEdit = cancelEdit;
     window.deleteTransaction = deleteTransaction;
     window.addCategory = addCategory;
+    window.editCategory = editCategory;
     window.deleteCategory = deleteCategory;
     window.loadBudget = loadBudget;
     window.loadRecentTransactions = loadRecentTransactions;
@@ -104,6 +106,7 @@
     window.loadGraphs = loadGraphs;
     window.exportCSV = exportCSV;
     window.importCSV = importCSV;
+    window.setHistoryTypeFilter = setHistoryTypeFilter;
 
     // 2. Attach Auth listeners
     document.getElementById('loginBtn').addEventListener('click', () => handleAuth('login'));
@@ -115,7 +118,7 @@
       setupLogoutListener();
       initNavigation();
       checkUser();
-      loadRecentTransactions(); 
+      loadRecentTransactions();
       cancelEdit();
     }
 
