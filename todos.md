@@ -4,7 +4,6 @@
 
 - Graphs zouden per maand moeten kunnen zoals nu maar ook over altijd
     - een trend grafiek toevoegen
-    - Uitgaven en inkomsten per jaar grafiek
 
 - Nele manier om eigenlijk uw budgetten te plannen
 
@@ -13,10 +12,6 @@
 - export maken van excel en aanpassen manueel
     - Kopieren, doorgaan in excel, export naar csv, importeren
 
-
-- rollover fiksen voor de gezamelijke en nele
-    - die history aanpassen waar nodig!!
-    - Laten zien hoeveel van de rollover komt en hoeveel van de huidige maand is.
-
-- Manier om die categoriebudgetten per maand aan te passen 
-    - Doe dat nu rechtstreeks in de database
+- Nog eens kijken of alles wel universeel is
+    - Dingen zoals inkonst categorie bv
+    - kijken of alles wel instelbaar is vanaf de ui en ni in de backend

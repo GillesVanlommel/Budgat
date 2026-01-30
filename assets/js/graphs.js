@@ -37,8 +37,10 @@ export async function loadGraphs() {
   let thisMonthIncome = 0; 
   let lastMonthExpense = 0;
   
+  // NEW: Object to hold both Income and Expense for history
+  const monthlyStats = {}; 
+  
   const categoryTotals = {}; 
-  const historyMap = {}; 
   const dailyAccumulation = {}; 
 
   const daysInMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
@@ -51,17 +53,25 @@ export async function loadGraphs() {
     const amount = parseFloat(t.amount);
     const isIncomeCat = t.category.toLowerCase() === 'inkomsten';
 
-    if (!isIncomeCat) {
-        if (!historyMap[monthKey]) historyMap[monthKey] = 0;
-        historyMap[monthKey] += amount;
+    // Initialize monthly stats if not exists
+    if (!monthlyStats[monthKey]) {
+        monthlyStats[monthKey] = { income: 0, expense: 0 };
     }
 
+    // Logic: Negative amount = Income (green in list), Positive = Expense
+    if (amount < 0) {
+        monthlyStats[monthKey].income += Math.abs(amount);
+    } else if (!isIncomeCat) {
+        monthlyStats[monthKey].expense += amount;
+    }
+
+    // Current Month Totals for Top Cards
     if (monthKey === currentMonthKey) {
       if (amount < 0) {
         thisMonthIncome += Math.abs(amount);
       }
       
-      if (!isIncomeCat) {
+      if (!isIncomeCat && amount > 0) {
         thisMonthExpense += amount;
         if (!categoryTotals[t.category]) categoryTotals[t.category] = 0;
         categoryTotals[t.category] += amount;
@@ -69,7 +79,7 @@ export async function loadGraphs() {
       }
     }
 
-    if (monthKey === lastMonthKey && !isIncomeCat) {
+    if (monthKey === lastMonthKey && !isIncomeCat && amount > 0) {
       lastMonthExpense += amount;
     }
   });
@@ -121,7 +131,8 @@ export async function loadGraphs() {
     trendEl.className = "text-lg sm:text-xl font-bold text-emerald-500 mt-1";
   }
 
-  renderHistoryChart(historyMap);
+  // Pass the full stats object to the renderer
+  renderHistoryChart(monthlyStats);
   renderDailyChart(dailyLabels, dailyData);
   
   if (typeof google !== 'undefined' && google.charts) {
@@ -129,28 +140,58 @@ export async function loadGraphs() {
   }
 }
 
-function renderHistoryChart(historyMap) {
+function renderHistoryChart(monthlyStats) {
   const ctx = document.getElementById('historyChart');
   if (!ctx) return;
-  const keys = Object.keys(historyMap);
-  const recentKeys = keys.slice(-6);
+  
+  const keys = Object.keys(monthlyStats);
+  const recentKeys = keys.slice(-6); // Last 6 months
+  
   if (historyChartInstance) historyChartInstance.destroy();
+  
   historyChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: recentKeys.map(k => k.split(' ')[0]),
-      datasets: [{
-        label: 'Spent',
-        data: recentKeys.map(k => historyMap[k]),
-        backgroundColor: '#cbd5e1',
-        borderRadius: 4,
-        hoverBackgroundColor: '#6366f1'
-      }]
+      labels: recentKeys.map(k => k.split(' ')[0]), // Just the Month Name
+      datasets: [
+        {
+          label: 'Income',
+          data: recentKeys.map(k => monthlyStats[k].income),
+          backgroundColor: '#10b981', // Emerald 500
+          borderRadius: 4,
+          hoverBackgroundColor: '#059669'
+        },
+        {
+          label: 'Expenses',
+          data: recentKeys.map(k => monthlyStats[k].expense),
+          backgroundColor: '#ef4444', // Red 500
+          borderRadius: 4,
+          hoverBackgroundColor: '#dc2626'
+        }
+      ]
     },
     options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true, grid: { display: false } }, x: { grid: { display: false } } }
+      responsive: true, 
+      maintainAspectRatio: false,
+      plugins: { 
+          legend: { 
+              display: true,
+              position: 'bottom',
+              labels: {
+                  boxWidth: 12,
+                  font: { size: 10 }
+              }
+          } 
+      },
+      scales: { 
+          y: { 
+              beginAtZero: true, 
+              grid: { display: false } 
+          }, 
+          x: { 
+              grid: { display: false } 
+          } 
+      }
     }
   });
 }
