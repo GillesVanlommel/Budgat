@@ -33,16 +33,31 @@ function updateViewVisibility() {
   const listView = document.getElementById('budgetListView');
   const gridView = document.getElementById('budgetGridView');
   const subtitle = document.getElementById('budgetSubtitle');
+  const container = document.getElementById('mainContainer'); // Get the container
 
   if (isGridView) {
     listView.classList.add('hidden');
     gridView.classList.remove('hidden');
     subtitle.innerText = "Historical spending vs Budget";
+    
+    // Expand to wide view
+    if (container) {
+      container.classList.remove('max-w-md');
+      container.classList.add('max-w-7xl'); // Wide mode
+    }
+
     renderGrid();
   } else {
     listView.classList.remove('hidden');
     gridView.classList.add('hidden');
     subtitle.innerText = "Overview for this month";
+
+    // Shrink back to mobile view
+    if (container) {
+      container.classList.add('max-w-md');
+      container.classList.remove('max-w-7xl'); // Narrow mode
+    }
+
     renderList();
   }
 }

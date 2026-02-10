@@ -24,7 +24,13 @@ export function switchView(targetId) {
     const el = document.getElementById(id);
     if(el) el.classList.add('hidden');
   });
-
+  // 2. Reset Container Width (Default to narrow phone view)
+  const container = document.getElementById('mainContainer');
+  if (container) {
+    container.classList.add('max-w-md');
+    container.classList.remove('max-w-7xl');
+  }
+  
   // 2. Show target
   const targetElement = document.getElementById(targetId);
   if (targetElement) {

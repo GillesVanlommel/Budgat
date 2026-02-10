@@ -20,6 +20,31 @@
     </div>
   </div>
 
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">Balance Checkpoints</h2>
+    <p class="text-sm text-slate-500 mb-6">
+      Create a "save point" of your current balance. The system will calculate if your transactions match the difference
+      between points.
+    </p>
+
+    <div class="flex gap-2 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 items-end">
+      <div class="flex-grow">
+        <label class="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Current Balance (€)</label>
+        <input type="number" id="reconAmount" placeholder="e.g. 1250.00" step="0.01"
+          class="w-full p-3 border border-slate-200 rounded-lg text-lg font-mono text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+      </div>
+      <button onclick="addReconciliation()"
+        class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-medium shadow-sm shadow-indigo-200 transition-all active:scale-95">
+        Set Checkpoint
+      </button>
+    </div>
+
+    <div id="reconciliationList" class="space-y-2">
+    </div>
+
+    <img src="" onerror="if(window.loadReconciliationList) window.loadReconciliationList()" class="hidden">
+  </div>
+
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-4 text-slate-700">Data Management</h2>
 

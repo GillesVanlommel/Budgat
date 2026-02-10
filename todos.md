@@ -1,11 +1,6 @@
 # List of todos
-
-- add shared account functionality
-
 - Graphs zouden per maand moeten kunnen zoals nu maar ook over altijd
     - een trend grafiek toevoegen
-
-- Nele manier om eigenlijk uw budgetten te plannen
 
 - Spaar en beleggrafiek maken
 
