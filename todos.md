@@ -1,4 +1,7 @@
 # List of todos
+- Balance checkpoint 
+    - is momenteel altijd one rekening precies, ipv van user based. Will need changes to the database
+
 - Graphs zouden per maand moeten kunnen zoals nu maar ook over altijd
     - een trend grafiek toevoegen
 
