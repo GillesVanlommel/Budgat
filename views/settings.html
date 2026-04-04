@@ -46,6 +46,36 @@
   </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">V2 Categories</h2>
+    <p class="text-sm text-slate-500 mb-4">These categories use stable category kinds behind the scenes and will power the new budgeting model.</p>
+
+    <div id="v2CategorySetupHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
+      Create V2 categories before we switch the transaction flow to the new model.
+    </div>
+
+    <form id="v2CategoryCreateForm" class="space-y-3 mb-6">
+      <input type="text" id="v2CategoryNameInput" placeholder="Category Name" class="w-full p-2 border rounded-lg">
+
+      <select id="v2CategoryKindInput" class="w-full p-2 border rounded-lg">
+        <option value="">Select a category kind</option>
+      </select>
+
+      <div id="v2CategoryError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+
+      <button id="createV2CategoryBtn"
+        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
+        Add V2 Category
+      </button>
+    </form>
+
+    <div id="v2CategoryList" class="space-y-2 mb-4"></div>
+
+    <div class="text-xs text-slate-400 border-t border-slate-100 pt-4">
+      Legacy categories below are still active for the old transaction flow until the V2 transaction rewrite is done.
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-4 text-slate-700">Manage Categories</h2>
 
     <div class="flex flex-col sm:flex-row gap-2 mb-4">
