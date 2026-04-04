@@ -30,6 +30,7 @@ Assumption for the next developer:
 3. `transfer` between accounts (not spending)
 - History view with filters.
 - Month-based budget model (`budget_months`, `budget_lines`).
+- Budget view is account-scoped via selector (one account at a time).
 - Reconciliation checkpoints per account.
 - Analytics view on V2 transactions.
 
@@ -45,6 +46,14 @@ Assumption for the next developer:
   then recreates personal checking accounts for all members
 - Seed mock data:
   resets first, then creates categories and sample transactions/transfers
+- Debug tools are restricted to owner/admin.
+- Base account naming now prefers actual user profile names (not household name text).
+
+### SQL migration baseline for fresh environments
+- `012_account_based_categories.sql`
+- `013_category_kind_resilience.sql`
+- `014_debug_household_seed_tools.sql`
+- `015_budget_account_scope.sql`
 
 ## 3) Problem Statement (What Is Still Wrong or Incomplete)
 
@@ -56,6 +65,7 @@ The current build is functionally strong but still has onboarding and maintainab
 
 There is also a product consistency issue:
 - some docs still describe older category UX (explicit kind selection), while runtime UX is now simplified flow-type selection
+- budget is now intentionally account-by-account, so product copy/docs must stop describing one combined household category budget list.
 
 ## 4) Product Decisions Confirmed by Owner (Do Not Re-debate)
 
@@ -111,24 +121,39 @@ Definition of completion:
 - Member cannot edit hidden accounts.
 - Member can create/edit categories only on visible accounts.
 
-### 3. Code Cleanup Pass (Third priority; existing final-design TODO)
+### 3. Documentation + UX Consistency Cleanup (Third priority)
 Deliver:
+- Align all product text with actual runtime behavior:
+  account-scoped budget view,
+  account-scoped categories,
+  no transfer categories.
 - Remove dead/duplicate code paths and outdated assumptions.
-- Standardize module boundaries for setup/account/category/transaction flows.
-- Ensure docs and in-app wording match current behavior.
 
 Definition of completion:
 - No stale imports/exports from removed flows.
 - No runtime references to outdated category UX.
-- Design docs match implemented V2 behavior.
+- No runtime references to outdated budget UX.
+- Handoff docs and design docs match implemented V2 behavior.
 
-### 4. Automated Tests for High-Risk V2 Flows (Fourth priority; existing final-design TODO)
+### 4. Code Cleanup Pass (Fourth priority; existing final-design TODO)
+Deliver:
+- Standardize module boundaries for setup/account/category/transaction/budget/debug flows.
+- Keep SQL/RPC definitions easy to discover and version.
+- Remove remaining V1-era naming ambiguities.
+
+Definition of completion:
+- Clear feature ownership per module.
+- No duplicate business logic in multiple frontend files.
+- Migrations and runtime assumptions are aligned.
+
+### 5. Automated Tests for High-Risk V2 Flows (Fifth priority; existing final-design TODO)
 Deliver:
 - Add tests around:
   account visibility boundaries,
   account-based category enforcement,
   transfer semantics,
-  invite/join + auto-checking behavior.
+  invite/join + auto-checking behavior,
+  account-scoped budget listing.
 
 Definition of completion:
 - Regression suite covers critical SQL and key frontend workflows.
