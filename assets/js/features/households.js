@@ -28,9 +28,10 @@ export async function createHousehold({ name, baseCurrency = 'EUR', ownerDisplay
   return data?.[0] || null;
 }
 
-export async function createHouseholdCategoryByKind({ householdId, name, categoryKindKey }) {
+export async function createHouseholdCategoryByKind({ householdId, accountId, name, categoryKindKey }) {
   const { data, error } = await db.rpc('create_household_category_by_kind', {
     p_household_id: householdId,
+    p_account_id: accountId || null,
     p_name: name,
     p_category_kind_key: categoryKindKey
   });

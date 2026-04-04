@@ -119,6 +119,13 @@ export async function importCSV() {
     categoryByName[category.name.trim().toLowerCase()] = category.category_id;
   });
 
+  const categoryByAccountAndName = {};
+  categories.forEach(category => {
+    const accountId = category.account_id || '';
+    const key = `${accountId}::${category.name.trim().toLowerCase()}`;
+    categoryByAccountAndName[key] = category.category_id;
+  });
+
   const content = await file.text();
   const lines = content
     .split(/\r?\n/)
@@ -151,7 +158,10 @@ export async function importCSV() {
     const amount = Number(String(amountRaw || '0').replace(',', '.'));
     const sourceAccountId = accountByName[(sourceAccountName || '').trim().toLowerCase()] || null;
     const destinationAccountId = accountByName[(destinationAccountName || '').trim().toLowerCase()] || null;
-    const categoryId = categoryByName[(categoryName || '').trim().toLowerCase()] || null;
+    const normalizedCategoryName = (categoryName || '').trim().toLowerCase();
+    const categoryId = sourceAccountId
+      ? categoryByAccountAndName[`${sourceAccountId}::${normalizedCategoryName}`] || null
+      : (categoryByName[normalizedCategoryName] || null);
     const isCleared = String(clearedRaw || '').toLowerCase() === 'true';
 
     if (!['expense', 'income', 'transfer'].includes(normalizedKind)) {

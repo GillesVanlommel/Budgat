@@ -124,6 +124,8 @@ export async function initApp() {
   bindAccountsUi({
     onAccountsChanged: async () => {
       renderAccountsSetup();
+      await hydrateV2CategoryContext();
+      renderV2Categories();
       renderV2TransactionForm();
       await loadV2History();
       await loadV2Reconciliation();

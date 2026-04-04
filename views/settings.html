@@ -127,19 +127,22 @@
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-2 text-slate-700">Categories</h2>
-    <p class="text-sm text-slate-500 mb-4">Create a category name and choose if it is expense or income. Transfers are handled by account-to-account transactions.</p>
+    <p class="text-sm text-slate-500 mb-4">Categories are account-based. Select an account, then create expense or income categories for that account.</p>
 
     <div id="v2CategorySetupHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
-      Create expense and income categories so they can be used in transactions and budgets.
+      Create account categories so they can be used in transactions and budgets.
     </div>
 
     <form id="v2CategoryCreateForm" class="space-y-3 mb-6">
+      <select id="v2CategoryAccountInput" class="w-full p-2 border rounded-lg">
+        <option value="">Select account</option>
+      </select>
+
       <input type="text" id="v2CategoryNameInput" placeholder="Category Name" class="w-full p-2 border rounded-lg">
 
       <select id="v2CategoryFlowInput" class="w-full p-2 border rounded-lg">
         <option value="expense">Expense</option>
         <option value="income">Income</option>
-        <option value="transfer">Transfer</option>
       </select>
 
       <div id="v2CategoryError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
