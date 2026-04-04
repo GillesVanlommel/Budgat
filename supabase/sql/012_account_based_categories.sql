@@ -35,11 +35,16 @@ default_household_accounts as (
   order by a.household_id, a.created_at asc, a.id asc
 )
 update public.household_categories hc
-set account_id = coalesce(rta.account_id, dha.account_id)
+set account_id = coalesce(
+  (
+    select rta.account_id
+    from ranked_tx_accounts rta
+    where rta.category_id = hc.id
+      and rta.rn = 1
+  ),
+  dha.account_id
+)
 from default_household_accounts dha
-left join ranked_tx_accounts rta
-  on rta.category_id = hc.id
- and rta.rn = 1
 where hc.account_id is null
   and dha.household_id = hc.household_id;
 
