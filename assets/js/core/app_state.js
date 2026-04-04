@@ -2,6 +2,8 @@ const appState = {
   currentUser: null,
   currentHousehold: null,
   households: [],
+  householdAccounts: [],
+  householdMembers: [],
   currentView: 'view-add',
   viewsLoaded: false
 };
@@ -32,6 +34,22 @@ export function getHouseholds() {
   return appState.households;
 }
 
+export function setHouseholdAccounts(accounts) {
+  appState.householdAccounts = Array.isArray(accounts) ? accounts : [];
+}
+
+export function getHouseholdAccounts() {
+  return appState.householdAccounts;
+}
+
+export function setHouseholdMembers(members) {
+  appState.householdMembers = Array.isArray(members) ? members : [];
+}
+
+export function getHouseholdMembers() {
+  return appState.householdMembers;
+}
+
 export function setSelectedHouseholdId(householdId) {
   if (!householdId) {
     localStorage.removeItem(SELECTED_HOUSEHOLD_STORAGE_KEY);
@@ -48,6 +66,8 @@ export function getSelectedHouseholdId() {
 export function clearCurrentHousehold() {
   appState.currentHousehold = null;
   appState.households = [];
+  appState.householdAccounts = [];
+  appState.householdMembers = [];
   localStorage.removeItem(SELECTED_HOUSEHOLD_STORAGE_KEY);
 }
 

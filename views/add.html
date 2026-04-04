@@ -13,6 +13,10 @@
         <button type="button" id="typeExpense" onclick="setTransactionType('expense')" class="flex-1 py-2 rounded-lg font-medium transition border-2 border-red-200 bg-red-50 text-red-700">Expense</button>
         <button type="button" id="typeIncome" onclick="setTransactionType('income')" class="flex-1 py-2 rounded-lg font-medium transition border-2 border-slate-200 bg-white text-slate-400">Income</button>
       </div>
+
+      <div id="addViewAccountHint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+        No V2 accounts configured for this household yet. Add accounts in Settings before moving transactions to the new model.
+      </div>
       
       <select id="categorySelect" class="w-full p-2 border rounded-lg">
         <option value="">Select a Category</option>

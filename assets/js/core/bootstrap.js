@@ -2,6 +2,7 @@ import { markViewsLoaded } from './app_state.js';
 import { handleAuth, checkUser, setupLogoutListener } from './auth.js';
 import { loadViews } from './loader.js';
 import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
+import { bindAccountsUi, createHouseholdAccount, hydrateAccountContext, renderAccountsSetup } from '../features/accounts.js';
 import {
   bindHouseholdUi,
   createHousehold,
@@ -36,6 +37,7 @@ const globalActions = {
   addCategory,
   editCategory,
   deleteCategory,
+  createHouseholdAccount,
   createHousehold,
   createHouseholdCategoryByKind,
   loadBudget,
@@ -110,6 +112,9 @@ async function initializeAuthenticatedApp() {
 
   setAppMode('active');
 
+  await hydrateAccountContext();
+  renderAccountsSetup();
+
   await Promise.all([
     loadCategories(),
     loadCategoryTypes()
@@ -129,6 +134,11 @@ export async function initApp() {
   bindHouseholdUi({
     onHouseholdChange: async () => {
       await initializeAuthenticatedApp();
+    }
+  });
+  bindAccountsUi({
+    onAccountsChanged: async () => {
+      renderAccountsSetup();
     }
   });
 
