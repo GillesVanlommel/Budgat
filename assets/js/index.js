@@ -19,6 +19,13 @@ export {
   renderV2Categories
 } from './features/v2_categories.js';
 export {
+  bindV2BudgetUi,
+  listV2BudgetMonthLines,
+  loadV2Budget,
+  renderV2Budget,
+  setV2BudgetLine
+} from './features/v2_budget.js';
+export {
   bindV2HistoryUi,
   listV2HistoryTransactions,
   loadV2History,

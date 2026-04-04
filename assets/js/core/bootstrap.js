@@ -3,6 +3,7 @@ import { handleAuth, checkUser, setupLogoutListener } from './auth.js';
 import { loadViews } from './loader.js';
 import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
 import { bindAccountsUi, createHouseholdAccount, hydrateAccountContext, renderAccountsSetup } from '../features/accounts.js';
+import { bindV2BudgetUi, loadV2Budget, renderV2Budget } from '../features/v2_budget.js';
 import { bindV2HistoryUi, loadV2History, renderV2History } from '../features/v2_history.js';
 import { bindV2CategoryUi, hydrateV2CategoryContext, renderV2Categories } from '../features/v2_categories.js';
 import { bindV2TransactionUi, hydrateV2TransactionContext, renderV2RecentTransactions, renderV2TransactionForm } from '../features/v2_transactions.js';
@@ -44,6 +45,7 @@ const globalActions = {
   createHousehold,
   createHouseholdCategoryByKind,
   loadBudget,
+  loadV2Budget,
   loadRecentTransactions,
   loadAllTransactions,
   loadGraphs,
@@ -51,6 +53,7 @@ const globalActions = {
   setHistoryTypeFilter,
   listHouseholds,
   renderV2History,
+  renderV2Budget,
   renderV2Categories,
   renderV2RecentTransactions,
   exportCSV,
@@ -127,6 +130,7 @@ async function initializeAuthenticatedApp() {
   renderV2TransactionForm();
   renderV2RecentTransactions();
   await loadV2History();
+  await loadV2Budget();
 
   await Promise.all([
     loadCategories(),
@@ -161,15 +165,18 @@ export async function initApp() {
       renderV2TransactionForm();
       renderV2Categories();
       await loadV2History();
+      await loadV2Budget();
     }
   });
   bindV2TransactionUi({
     onTransactionsChanged: async () => {
       renderV2RecentTransactions();
       await loadV2History();
+      await loadV2Budget();
     }
   });
   bindV2HistoryUi();
+  bindV2BudgetUi();
 
   const user = await checkUser();
   if (user) {
