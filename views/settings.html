@@ -199,6 +199,25 @@
   </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">Debug Tools</h2>
+    <p class="text-sm text-slate-500 mb-4">Developer utility: reset household data to base accounts or seed mock categories and transactions.</p>
+
+    <div id="debugToolsError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 mb-3"></div>
+    <div id="debugToolsSuccess" class="hidden text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3 mb-3"></div>
+
+    <div class="flex flex-col sm:flex-row gap-2">
+      <button id="debugResetHouseholdBtn"
+        class="bg-amber-600 text-white px-4 py-2 rounded-lg hover:bg-amber-700 font-medium whitespace-nowrap">
+        Reset to Base
+      </button>
+      <button id="debugSeedHouseholdBtn"
+        class="bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-slate-800 font-medium whitespace-nowrap">
+        Seed Mock Data
+      </button>
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-4 text-slate-700">Account</h2>
     <button id="logoutBtn"
       class="w-full border border-red-500 text-red-500 py-2 rounded-lg hover:bg-red-50 transition">Logout</button>
