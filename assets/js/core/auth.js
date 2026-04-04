@@ -13,7 +13,7 @@ function updateAuthUI(user) {
   if (user) {
     authSection.classList.add('hidden');
     appSection.classList.remove('hidden');
-    bottomNav.classList.remove('hidden');
+    bottomNav.classList.add('hidden');
   } else {
     clearCurrentHousehold();
     authSection.classList.remove('hidden');

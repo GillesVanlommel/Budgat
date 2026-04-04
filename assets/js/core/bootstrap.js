@@ -2,7 +2,14 @@ import { markViewsLoaded } from './app_state.js';
 import { handleAuth, checkUser, setupLogoutListener } from './auth.js';
 import { loadViews } from './loader.js';
 import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
-import { createHousehold, createHouseholdCategoryByKind, hydrateHouseholdContext, listHouseholds } from '../features/households.js';
+import {
+  bindHouseholdUi,
+  createHousehold,
+  createHouseholdCategoryByKind,
+  hydrateHouseholdContext,
+  listHouseholds,
+  renderHouseholdShell
+} from '../features/households.js';
 import {
   saveTransaction,
   loadRecentTransactions,
@@ -50,6 +57,25 @@ function registerGlobalActions() {
   });
 }
 
+function setAppMode(mode) {
+  const setupSection = document.getElementById('householdSetupSection');
+  const contentSection = document.getElementById('householdAppContent');
+  const bottomNav = document.getElementById('bottomNav');
+
+  if (!setupSection || !contentSection || !bottomNav) return;
+
+  if (mode === 'setup') {
+    setupSection.classList.remove('hidden');
+    contentSection.classList.add('hidden');
+    bottomNav.classList.add('hidden');
+    return;
+  }
+
+  setupSection.classList.add('hidden');
+  contentSection.classList.remove('hidden');
+  bottomNav.classList.remove('hidden');
+}
+
 function bindAuthButtons() {
   const loginBtn = document.getElementById('loginBtn');
   const signupBtn = document.getElementById('signupBtn');
@@ -74,11 +100,15 @@ function bindAuthButtons() {
 }
 
 async function initializeAuthenticatedApp() {
-  try {
-    await hydrateHouseholdContext();
-  } catch (error) {
-    console.error('Failed to load household context:', error);
+  const households = await hydrateHouseholdContext();
+  renderHouseholdShell(households);
+
+  if (households.length === 0) {
+    setAppMode('setup');
+    return;
   }
+
+  setAppMode('active');
 
   await Promise.all([
     loadCategories(),
@@ -96,6 +126,11 @@ export async function initApp() {
   registerGlobalActions();
   bindAuthButtons();
   setupLogoutListener();
+  bindHouseholdUi({
+    onHouseholdChange: async () => {
+      await initializeAuthenticatedApp();
+    }
+  });
 
   const user = await checkUser();
   if (user) {

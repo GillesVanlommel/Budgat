@@ -1,6 +1,7 @@
 const appState = {
   currentUser: null,
   currentHousehold: null,
+  households: [],
   currentView: 'view-add',
   viewsLoaded: false
 };
@@ -23,6 +24,14 @@ export function getCurrentHousehold() {
   return appState.currentHousehold;
 }
 
+export function setHouseholds(households) {
+  appState.households = Array.isArray(households) ? households : [];
+}
+
+export function getHouseholds() {
+  return appState.households;
+}
+
 export function setSelectedHouseholdId(householdId) {
   if (!householdId) {
     localStorage.removeItem(SELECTED_HOUSEHOLD_STORAGE_KEY);
@@ -38,6 +47,7 @@ export function getSelectedHouseholdId() {
 
 export function clearCurrentHousehold() {
   appState.currentHousehold = null;
+  appState.households = [];
   localStorage.removeItem(SELECTED_HOUSEHOLD_STORAGE_KEY);
 }
 

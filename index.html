@@ -14,8 +14,21 @@
 <body class="bg-slate-50 text-slate-900 font-sans">
 
   <div id="mainContainer" class="max-w-md mx-auto p-6 pb-24 transition-all duration-300 ease-in-out">
-    <header class="flex justify-between items-center mb-6">
-      <h1 class="text-2xl font-bold text-indigo-600">BudgetPlanner</h1>
+    <header class="flex justify-between items-start gap-4 mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-indigo-600">Budgat</h1>
+        <p id="currentHouseholdName" class="text-sm font-medium text-slate-700 mt-1">No household selected</p>
+        <p id="currentHouseholdMeta" class="text-xs text-slate-500">Create a household to start setup.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <div id="householdSwitcher" class="hidden">
+          <select id="householdSelect" class="max-w-[180px] p-2 border rounded-lg text-sm bg-white text-slate-700"></select>
+        </div>
+        <button id="toggleHouseholdCreateBtn"
+          class="hidden border border-indigo-200 text-indigo-700 bg-indigo-50 px-3 py-2 rounded-lg text-sm font-medium hover:bg-indigo-100">
+          New Household
+        </button>
+      </div>
     </header>
 
     <div id="authSection" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -29,11 +42,29 @@
     </div>
 
     <div id="appSection" class="hidden">
-      <div id="view-add"></div>
-      <div id="view-history" class="hidden h-full"></div>
-      <div id="view-budget" class="hidden"></div>
-      <div id="view-graphs" class="hidden"></div>
-      <div id="view-settings" class="hidden"></div>
+      <div id="householdSetupSection" class="hidden bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+        <h2 class="text-lg font-semibold mb-2 text-slate-800">Create Your First Household</h2>
+        <p class="text-sm text-slate-500 mb-4">Households hold the shared accounts, categories, budgets, and transactions.</p>
+
+        <form id="householdCreateForm" class="space-y-3">
+          <input type="text" id="householdNameInput" placeholder="Household Name" class="w-full p-2 border rounded-lg">
+          <input type="text" id="householdDisplayNameInput" placeholder="Your Display Name (Optional)" class="w-full p-2 border rounded-lg">
+          <input type="text" id="householdCurrencyInput" value="EUR" maxlength="3" class="w-full p-2 border rounded-lg uppercase">
+          <div id="householdSetupError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+          <button id="createHouseholdBtn" type="submit"
+            class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700">
+            Create Household
+          </button>
+        </form>
+      </div>
+
+      <div id="householdAppContent" class="hidden">
+        <div id="view-add"></div>
+        <div id="view-history" class="hidden h-full"></div>
+        <div id="view-budget" class="hidden"></div>
+        <div id="view-graphs" class="hidden"></div>
+        <div id="view-settings" class="hidden"></div>
+      </div>
     </div>
   </div>
 
