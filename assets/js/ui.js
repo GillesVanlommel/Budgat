@@ -3,7 +3,10 @@ import { DEFAULT_VIEW, getViewIds } from './core/views.js';
 
 const VIEW_REFRESHERS = {
   'view-add': () => window.loadRecentTransactions && window.loadRecentTransactions(),
-  'view-history': () => window.loadAllTransactions && window.loadAllTransactions(),
+  'view-history': () => {
+    if (window.loadV2History) window.loadV2History();
+    if (window.loadAllTransactions) window.loadAllTransactions();
+  },
   'view-budget': () => window.loadBudget && window.loadBudget(),
   'view-graphs': () => window.loadGraphs && window.loadGraphs(),
   'view-settings': () => window.loadReconciliationList && window.loadReconciliationList()

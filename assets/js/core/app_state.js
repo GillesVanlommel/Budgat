@@ -7,6 +7,7 @@ const appState = {
   v2CategoryKinds: [],
   v2HouseholdCategories: [],
   v2RecentTransactions: [],
+  v2HistoryTransactions: [],
   currentView: 'view-add',
   viewsLoaded: false
 };
@@ -71,11 +72,18 @@ export function getV2HouseholdCategories() {
 
 export function setV2RecentTransactions(transactions) {
   appState.v2RecentTransactions = Array.isArray(transactions) ? transactions : [];
-  window.__budgat_v2_recent_transactions__ = appState.v2RecentTransactions;
 }
 
 export function getV2RecentTransactions() {
   return appState.v2RecentTransactions;
+}
+
+export function setV2HistoryTransactions(transactions) {
+  appState.v2HistoryTransactions = Array.isArray(transactions) ? transactions : [];
+}
+
+export function getV2HistoryTransactions() {
+  return appState.v2HistoryTransactions;
 }
 
 export function setSelectedHouseholdId(householdId) {
@@ -99,7 +107,7 @@ export function clearCurrentHousehold() {
   appState.v2CategoryKinds = [];
   appState.v2HouseholdCategories = [];
   appState.v2RecentTransactions = [];
-  window.__budgat_v2_recent_transactions__ = [];
+  appState.v2HistoryTransactions = [];
   localStorage.removeItem(SELECTED_HOUSEHOLD_STORAGE_KEY);
 }
 

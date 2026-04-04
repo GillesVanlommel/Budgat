@@ -2,11 +2,61 @@
   <header class="flex justify-between items-end px-4 pt-4 shrink-0">
     <div>
       <h2 class="text-2xl font-bold text-slate-800">History</h2>
-      <p class="text-slate-500 text-sm">Swipe for past months</p>
+      <p class="text-slate-500 text-sm">V2 household ledger first, legacy history below</p>
     </div>
   </header>
 
-  <div class="px-4 space-y-2">
+  <div class="px-4">
+    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 space-y-3">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h3 class="font-semibold text-slate-800">V2 Ledger</h3>
+          <p class="text-xs text-slate-500">Reads from the new household/account transaction model.</p>
+        </div>
+        <div id="v2HistoryResultsMeta" class="text-xs text-slate-500">0 results</div>
+      </div>
+
+      <div id="v2HistorySetupHint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+        This household still needs V2 accounts or V2 categories before the new ledger becomes useful.
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <input type="text" id="v2HistorySearch" placeholder="Search description, note, account, category"
+          class="w-full p-2 text-sm border rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+        <input type="month" id="v2HistoryMonth"
+          class="w-full p-2 text-sm border rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+        <select id="v2HistoryKind" class="w-full p-2 text-sm border rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+          <option value="">All Types</option>
+          <option value="expense">Expenses</option>
+          <option value="income">Income</option>
+          <option value="transfer">Transfers</option>
+        </select>
+
+        <select id="v2HistoryAccount" class="w-full p-2 text-sm border rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+          <option value="">All Accounts</option>
+        </select>
+
+        <select id="v2HistoryCategory" class="w-full p-2 text-sm border rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none">
+          <option value="">All Categories</option>
+        </select>
+      </div>
+
+      <p id="v2HistoryEmptyHint" class="hidden text-sm text-slate-500 italic">No V2 transactions match the current filters.</p>
+      <div id="v2HistoryList" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <div class="px-4 space-y-2 pt-2">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="font-semibold text-slate-800">Legacy History</h3>
+        <p class="text-xs text-slate-500">Old transaction model, still shown until the full cutover is done.</p>
+      </div>
+    </div>
+
     <div class="flex gap-2">
       <input type="text" id="historySearch" placeholder="Search..." 
              class="flex-1 p-2 text-sm border rounded-lg focus:ring-1 focus:ring-indigo-500 outline-none"
