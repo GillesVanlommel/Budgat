@@ -1,4 +1,49 @@
 <div class="space-y-6">
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">Household Accounts</h2>
+    <p class="text-sm text-slate-500 mb-4">Accounts are the source of truth for balances, transfers, savings, and reconciliation.</p>
+
+    <div id="accountSettingsHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
+      Add at least one account before moving transactions to the new V2 model.
+    </div>
+
+    <form id="accountCreateForm" class="space-y-3 mb-6">
+      <input type="text" id="accountNameInput" placeholder="Account Name" class="w-full p-2 border rounded-lg">
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <select id="accountTypeInput" class="w-full p-2 border rounded-lg">
+          <option value="checking">Checking</option>
+          <option value="savings">Savings</option>
+          <option value="cash">Cash</option>
+          <option value="credit_card">Credit Card</option>
+          <option value="investment">Investment</option>
+          <option value="loan">Loan</option>
+        </select>
+
+        <select id="accountOwnerInput" class="w-full p-2 border rounded-lg">
+          <option value="">Shared household account</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-2 items-center">
+        <input type="number" id="accountOpeningBalanceInput" value="0" step="0.01" placeholder="Opening Balance (€)"
+          class="w-full p-2 border rounded-lg">
+        <label class="flex items-center gap-2 text-sm text-slate-600">
+          <input type="checkbox" id="accountIncludeInBudgetInput" checked>
+          Include in budget
+        </label>
+      </div>
+
+      <div id="accountSetupError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+
+      <button id="createAccountBtn"
+        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
+        Add Account
+      </button>
+    </form>
+
+    <div id="accountList" class="space-y-2"></div>
+  </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-4 text-slate-700">Manage Categories</h2>

@@ -4,6 +4,14 @@ export { loadViews } from './core/loader.js';
 
 export { addCategory, deleteCategory, loadCategories, editCategory } from './features/categories.js';
 export {
+  bindAccountsUi,
+  createHouseholdAccount,
+  hydrateAccountContext,
+  listHouseholdAccounts,
+  listHouseholdMembers,
+  renderAccountsSetup
+} from './features/accounts.js';
+export {
   bindHouseholdUi,
   createHousehold,
   createHouseholdCategoryByKind,
