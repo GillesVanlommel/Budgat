@@ -1,4 +1,5 @@
 export { checkUser, handleAuth, setupLogoutListener } from './core/auth.js';
+export { initApp } from './core/bootstrap.js';
 export { loadViews } from './core/loader.js';
 
 export { addCategory, deleteCategory, loadCategories, editCategory } from './features/categories.js';
