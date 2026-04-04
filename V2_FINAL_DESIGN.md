@@ -23,6 +23,7 @@ Status as of `2026-04-04`.
 - The primary history screen is a V2 household ledger with month, type, account, category, and search filters.
 - The primary budget screen is month-based and uses `budget_months` and `budget_lines` instead of `monthly_budget` on categories.
 - Reconciliation is now account-based using `account_reconciliations`.
+- The analytics screen has been reintroduced on top of the V2 household transaction model.
 - The app can be set up from inside the UI for household, accounts, categories, budget, transactions, and reconciliation.
 - The primary app navigation is now V2-first, with legacy tools hidden from the main flow during cutover.
 
@@ -30,7 +31,6 @@ Status as of `2026-04-04`.
 
 - Build household invitations or join flows so another user can join an existing household from inside the app.
 - Add first-run defaults for suggested accounts and starter categories to reduce setup friction.
-- Build a proper V2 analytics screen before reintroducing analytics to the main navigation.
 - Replace legacy CSV import/export with V2-aware import/export tooling.
 - Decide how much legacy data migration support is needed and add migration helpers for any data you still want to preserve.
 - Remove the remaining legacy code paths after the V2 replacement features are fully in place.

@@ -4,6 +4,7 @@ import { loadViews } from './loader.js';
 import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
 import { bindAccountsUi, createHouseholdAccount, hydrateAccountContext, renderAccountsSetup } from '../features/accounts.js';
 import { bindV2BudgetUi, loadV2Budget, renderV2Budget } from '../features/v2_budget.js';
+import { bindV2GraphsUi, loadV2Graphs } from '../features/v2_graphs.js';
 import { bindV2HistoryUi, loadV2History, renderV2History } from '../features/v2_history.js';
 import { bindV2CategoryUi, hydrateV2CategoryContext, renderV2Categories } from '../features/v2_categories.js';
 import { bindV2ReconciliationUi, loadV2Reconciliation, renderV2Reconciliation } from '../features/v2_reconciliation.js';
@@ -29,6 +30,7 @@ const globalActions = {
   createHouseholdCategoryByKind,
   loadCategories,
   loadV2Budget,
+  loadV2Graphs,
   loadV2TransactionView,
   loadV2Reconciliation,
   loadV2History,
@@ -126,6 +128,7 @@ async function initializeAuthenticatedApp() {
   await loadV2TransactionView();
   await loadV2History();
   await loadV2Budget();
+  await loadV2Graphs();
   await loadV2Reconciliation();
   initNavigation();
 }
@@ -168,6 +171,7 @@ export async function initApp() {
   });
   bindV2HistoryUi();
   bindV2BudgetUi();
+  bindV2GraphsUi();
   bindV2ReconciliationUi();
   bindLegacyToolsUi();
 
