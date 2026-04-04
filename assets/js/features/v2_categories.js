@@ -1,8 +1,11 @@
 import { db } from '../core/database.js';
-import { getCurrentHousehold } from '../core/app_state.js';
-
-let cachedCategoryKinds = [];
-let cachedHouseholdCategories = [];
+import {
+  getCurrentHousehold,
+  getV2CategoryKinds,
+  getV2HouseholdCategories,
+  setV2CategoryKinds,
+  setV2HouseholdCategories
+} from '../core/app_state.js';
 
 function getV2CategoryUiElements() {
   return {
@@ -33,8 +36,8 @@ function setV2CategoryError(message) {
 export async function listCategoryKinds() {
   const { data, error } = await db.rpc('list_category_kinds');
   if (error) throw error;
-  cachedCategoryKinds = data || [];
-  return cachedCategoryKinds;
+  setV2CategoryKinds(data || []);
+  return getV2CategoryKinds();
 }
 
 export async function listV2HouseholdCategories(householdId) {
@@ -43,21 +46,21 @@ export async function listV2HouseholdCategories(householdId) {
   });
 
   if (error) throw error;
-  cachedHouseholdCategories = data || [];
-  return cachedHouseholdCategories;
+  setV2HouseholdCategories(data || []);
+  return getV2HouseholdCategories();
 }
 
 export async function hydrateV2CategoryContext() {
   const household = getCurrentHousehold();
   const householdId = household?.household_id;
 
-  const categoryKindsPromise = cachedCategoryKinds.length > 0
-    ? Promise.resolve(cachedCategoryKinds)
+  const categoryKindsPromise = getV2CategoryKinds().length > 0
+    ? Promise.resolve(getV2CategoryKinds())
     : listCategoryKinds();
 
   if (!householdId) {
     const categoryKinds = await categoryKindsPromise;
-    cachedHouseholdCategories = [];
+    setV2HouseholdCategories([]);
     return { categoryKinds, categories: [] };
   }
 
@@ -71,9 +74,11 @@ export async function hydrateV2CategoryContext() {
 
 export function renderV2Categories() {
   const { kindInput, list, hint } = getV2CategoryUiElements();
+  const categoryKinds = getV2CategoryKinds();
+  const categories = getV2HouseholdCategories();
 
   if (kindInput) {
-    kindInput.innerHTML = cachedCategoryKinds.map(kind => `
+    kindInput.innerHTML = categoryKinds.map(kind => `
       <option value="${kind.key}">
         ${kind.display_name} (${kind.flow_type})
       </option>
@@ -81,14 +86,14 @@ export function renderV2Categories() {
   }
 
   if (list) {
-    if (cachedHouseholdCategories.length === 0) {
+    if (categories.length === 0) {
       list.innerHTML = `
         <div class="text-sm text-slate-500 italic">
           No V2 household categories yet. Create categories from stable kinds so the new budgeting model stays consistent.
         </div>
       `;
     } else {
-      list.innerHTML = cachedHouseholdCategories.map(category => `
+      list.innerHTML = categories.map(category => `
         <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
           <div>
             <div class="font-medium text-slate-800">${category.name}</div>
@@ -105,7 +110,7 @@ export function renderV2Categories() {
   }
 
   if (hint) {
-    hint.classList.toggle('hidden', cachedHouseholdCategories.length > 0);
+    hint.classList.toggle('hidden', categories.length > 0);
   }
 }
 

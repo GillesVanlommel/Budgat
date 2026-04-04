@@ -4,6 +4,7 @@ import { loadViews } from './loader.js';
 import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
 import { bindAccountsUi, createHouseholdAccount, hydrateAccountContext, renderAccountsSetup } from '../features/accounts.js';
 import { bindV2CategoryUi, hydrateV2CategoryContext, renderV2Categories } from '../features/v2_categories.js';
+import { bindV2TransactionUi, hydrateV2TransactionContext, renderV2RecentTransactions, renderV2TransactionForm } from '../features/v2_transactions.js';
 import {
   bindHouseholdUi,
   createHousehold,
@@ -48,6 +49,7 @@ const globalActions = {
   setHistoryTypeFilter,
   listHouseholds,
   renderV2Categories,
+  renderV2RecentTransactions,
   exportCSV,
   importCSV,
   addReconciliation,
@@ -118,6 +120,9 @@ async function initializeAuthenticatedApp() {
   renderAccountsSetup();
   await hydrateV2CategoryContext();
   renderV2Categories();
+  await hydrateV2TransactionContext();
+  renderV2TransactionForm();
+  renderV2RecentTransactions();
 
   await Promise.all([
     loadCategories(),
@@ -143,11 +148,18 @@ export async function initApp() {
   bindAccountsUi({
     onAccountsChanged: async () => {
       renderAccountsSetup();
+      renderV2TransactionForm();
     }
   });
   bindV2CategoryUi({
     onCategoriesChanged: async () => {
+      renderV2TransactionForm();
       renderV2Categories();
+    }
+  });
+  bindV2TransactionUi({
+    onTransactionsChanged: async () => {
+      renderV2RecentTransactions();
     }
   });
 

@@ -1,5 +1,68 @@
 <div class="space-y-6">
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <div class="flex items-center justify-between gap-3 mb-4">
+      <div>
+        <h2 class="text-lg font-semibold text-slate-700">V2 Transaction</h2>
+        <p class="text-sm text-slate-500">This writes to the new household/account transaction model.</p>
+      </div>
+      <span class="text-[10px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 font-medium">new model</span>
+    </div>
+
+    <form id="v2TransactionForm" class="space-y-3">
+      <input type="date" id="v2TransactionDate" class="w-full p-2 border rounded-lg text-slate-700">
+
+      <select id="v2TransactionKind" class="w-full p-2 border rounded-lg">
+        <option value="expense">Expense</option>
+        <option value="income">Income</option>
+        <option value="transfer">Transfer</option>
+      </select>
+
+      <input type="text" id="v2TransactionDescription" placeholder="Description / Payee" class="w-full p-2 border rounded-lg">
+
+      <div id="v2TransactionSetupHint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+        This household needs accounts, and expense/income transactions also need V2 categories before you can save transactions in the new model.
+      </div>
+
+      <select id="v2TransactionAccount" class="w-full p-2 border rounded-lg">
+        <option value="">Select source account</option>
+      </select>
+
+      <div id="v2DestinationAccountWrap" class="hidden">
+        <select id="v2TransactionDestinationAccount" class="w-full p-2 border rounded-lg">
+          <option value="">Select destination account</option>
+        </select>
+      </div>
+
+      <div id="v2CategoryWrap">
+        <select id="v2TransactionCategory" class="w-full p-2 border rounded-lg">
+          <option value="">Select category</option>
+        </select>
+      </div>
+
+      <input type="number" id="v2TransactionAmount" step="0.01" placeholder="Amount (€)" class="w-full p-2 border rounded-lg">
+      <input type="text" id="v2TransactionNotes" placeholder="Notes (Optional)" class="w-full p-2 border rounded-lg">
+
+      <label class="flex items-center gap-2 text-sm text-slate-600">
+        <input type="checkbox" id="v2TransactionCleared">
+        Mark as cleared
+      </label>
+
+      <div id="v2TransactionError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+
+      <button id="v2TransactionSubmitBtn" type="submit"
+        class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition">
+        Save V2 Transaction
+      </button>
+    </form>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-4 text-slate-700">Recent V2 Activity</h2>
+    <p id="v2TransactionEmptyHint" class="hidden text-sm text-slate-500 italic">No V2 transactions yet.</p>
+    <ul id="v2RecentTransactionList" class="divide-y divide-slate-100"></ul>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 id="formTitle" class="text-lg font-semibold mb-4 text-slate-700">Add Transaction</h2>
     <div class="space-y-3">
       
