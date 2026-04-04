@@ -3,6 +3,7 @@ import { handleAuth, checkUser, setupLogoutListener } from './auth.js';
 import { loadViews } from './loader.js';
 import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
 import { bindAccountsUi, createHouseholdAccount, hydrateAccountContext, renderAccountsSetup } from '../features/accounts.js';
+import { bindV2CategoryUi, hydrateV2CategoryContext, renderV2Categories } from '../features/v2_categories.js';
 import {
   bindHouseholdUi,
   createHousehold,
@@ -46,6 +47,7 @@ const globalActions = {
   loadGraphs,
   setHistoryTypeFilter,
   listHouseholds,
+  renderV2Categories,
   exportCSV,
   importCSV,
   addReconciliation,
@@ -114,6 +116,8 @@ async function initializeAuthenticatedApp() {
 
   await hydrateAccountContext();
   renderAccountsSetup();
+  await hydrateV2CategoryContext();
+  renderV2Categories();
 
   await Promise.all([
     loadCategories(),
@@ -139,6 +143,11 @@ export async function initApp() {
   bindAccountsUi({
     onAccountsChanged: async () => {
       renderAccountsSetup();
+    }
+  });
+  bindV2CategoryUi({
+    onCategoriesChanged: async () => {
+      renderV2Categories();
     }
   });
 
