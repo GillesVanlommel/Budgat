@@ -32,6 +32,11 @@ export {
   renderV2History
 } from './features/v2_history.js';
 export {
+  bindV2GraphsUi,
+  listV2AnalyticsTransactions,
+  loadV2Graphs
+} from './features/v2_graphs.js';
+export {
   bindV2ReconciliationUi,
   deleteV2AccountReconciliation,
   listHouseholdAccountBalances,

@@ -9,6 +9,9 @@ const VIEW_REFRESHERS = {
   'view-budget': () => {
     if (window.loadV2Budget) window.loadV2Budget();
   },
+  'view-graphs': () => {
+    if (window.loadV2Graphs) window.loadV2Graphs();
+  },
   'view-settings': () => {
     if (window.loadV2Reconciliation) window.loadV2Reconciliation();
   }

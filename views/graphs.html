@@ -1,52 +1,60 @@
 <div class="space-y-6 pb-20">
-  <header class="flex justify-between items-center">
+  <header class="flex justify-between items-center gap-3">
     <div>
-      <h2 class="text-xl font-bold text-slate-700">Analytics Dashboard</h2>
-      <p class="text-slate-500 text-sm">Find problems at a glance</p>
+      <h2 class="text-xl font-bold text-slate-700">Analytics</h2>
+      <p class="text-slate-500 text-sm">V2 household analytics from account-based transactions.</p>
     </div>
-    <input type="month" id="graphMonthSelector" 
-           class="p-2 border rounded-lg text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500"
-           onchange="loadGraphs()">
+    <input type="month" id="v2GraphMonthSelector"
+      class="p-2 border rounded-lg text-sm font-medium text-slate-700 outline-none focus:ring-2 focus:ring-indigo-500">
   </header>
 
-  <div class="grid grid-cols-3 gap-2 sm:gap-4">
-    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
-      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Spent</p>
-      <div id="metricTotal" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
-    </div>
+  <div id="v2GraphSetupHint" class="hidden text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+    Create a household first to view analytics.
+  </div>
 
-    <div id="cardStatus" class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center transition-colors duration-500">
-      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Status</p>
-      <div id="metricStatus" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
-    </div>
+  <div id="v2GraphEmptyHint" class="hidden text-sm text-slate-500 italic">
+    No transactions for this month yet.
+  </div>
 
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
     <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
-      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Trend</p>
-      <div id="metricTrend" class="text-lg sm:text-xl font-bold text-slate-800 mt-1">...</div>
+      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Expense</p>
+      <div id="v2MetricExpense" class="text-sm sm:text-base font-bold text-slate-800 mt-1">EUR 0.00</div>
+    </div>
+    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
+      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Income</p>
+      <div id="v2MetricIncome" class="text-sm sm:text-base font-bold text-slate-800 mt-1">EUR 0.00</div>
+    </div>
+    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
+      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Net</p>
+      <div id="v2MetricNet" class="text-sm sm:text-base font-bold text-slate-800 mt-1">EUR 0.00</div>
+    </div>
+    <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 text-center">
+      <p class="text-[10px] sm:text-xs text-slate-400 uppercase font-bold tracking-wider">Transfers</p>
+      <div id="v2MetricTransfers" class="text-sm sm:text-base font-bold text-slate-800 mt-1">EUR 0.00</div>
     </div>
   </div>
 
-  <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200 w-full">
-    <h3 class="font-bold text-slate-700 mb-4 text-sm">Money Flow (Sankey)</h3>
-    <div id="sankey_chart" class="w-full h-80 sm:h-96"></div>
-    <p class="text-xs text-center text-slate-400 mt-2 italic">Shows flow from Total Spent to Categories</p>
+  <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
+    <h3 class="font-bold text-slate-700 mb-4 text-sm">Monthly Income vs Expense (6 months)</h3>
+    <div class="relative h-64">
+      <canvas id="v2MonthlyCashflowChart"></canvas>
+    </div>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-      <h3 class="font-bold text-slate-700 mb-4 text-sm">Income vs Expenses (6 Months)</h3>
-      <div class="relative h-64 w-full">
-        <canvas id="historyChart"></canvas>
+      <h3 class="font-bold text-slate-700 mb-4 text-sm">Spending by Category</h3>
+      <div class="relative h-64">
+        <canvas id="v2SpendingByCategoryChart"></canvas>
       </div>
     </div>
 
     <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200">
-      <h3 class="font-bold text-slate-700 mb-4 text-sm">This Month's Pace (Cumulative)</h3>
-      <div class="relative h-64 w-full">
-        <canvas id="dailyChart"></canvas>
+      <h3 class="font-bold text-slate-700 mb-4 text-sm">Account Activity</h3>
+      <div class="relative h-64">
+        <canvas id="v2AccountActivityChart"></canvas>
       </div>
-      <p class="text-xs text-center text-slate-400 mt-2 italic">Steep jumps = Big expenses</p>
     </div>
   </div>
-
 </div>
