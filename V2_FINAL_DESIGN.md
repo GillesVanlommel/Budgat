@@ -9,6 +9,34 @@ The goal is to turn Budgat from "a set of useful finance screens" into one coher
 - usable by a couple
 - later reusable by other households too
 
+## Status
+
+Status as of `2026-04-04`.
+
+### Completed in the app
+
+- Multi-household foundation exists with household selection and household membership roles in the database.
+- Household creation and first-run household setup exist in the app.
+- Household accounts exist with account type, owner member, opening balance, archive flag, and include-in-budget behavior.
+- User-defined household categories now sit on top of stable `category_kinds`.
+- The primary transaction flow is account-based and supports `expense`, `income`, and `transfer`.
+- The primary history screen is a V2 household ledger with month, type, account, category, and search filters.
+- The primary budget screen is month-based and uses `budget_months` and `budget_lines` instead of `monthly_budget` on categories.
+- Reconciliation is now account-based using `account_reconciliations`.
+- The app can be set up from inside the UI for household, accounts, categories, budget, transactions, and reconciliation.
+- The primary app navigation is now V2-first, with legacy tools hidden from the main flow during cutover.
+
+### Still to do
+
+- Build household invitations or join flows so another user can join an existing household from inside the app.
+- Add first-run defaults for suggested accounts and starter categories to reduce setup friction.
+- Build a proper V2 analytics screen before reintroducing analytics to the main navigation.
+- Replace legacy CSV import/export with V2-aware import/export tooling.
+- Decide how much legacy data migration support is needed and add migration helpers for any data you still want to preserve.
+- Remove the remaining legacy code paths after the V2 replacement features are fully in place.
+- Do the explicit code cleanup pass so the codebase is easier to extend before bigger product iterations.
+- Add automated tests around the new SQL RPCs and the highest-risk V2 frontend flows.
+
 ## 1. Product Definition
 
 Budgat is a `multi-household budgeting app` where each household:

@@ -45,6 +45,7 @@ export {
   createV2Transaction,
   hydrateV2TransactionContext,
   listRecentV2Transactions,
+  loadV2TransactionView,
   renderV2RecentTransactions,
   renderV2TransactionForm
 } from './features/v2_transactions.js';

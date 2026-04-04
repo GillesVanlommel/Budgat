@@ -4,7 +4,6 @@ export const VIEW_DEFINITIONS = [
   { id: 'view-add', file: 'views/add.html' },
   { id: 'view-history', file: 'views/history.html' },
   { id: 'view-budget', file: 'views/budget.html' },
-  { id: 'view-graphs', file: 'views/graphs.html' },
   { id: 'view-settings', file: 'views/settings.html' }
 ];
 

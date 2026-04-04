@@ -2,19 +2,15 @@ import { setCurrentView } from './core/app_state.js';
 import { DEFAULT_VIEW, getViewIds } from './core/views.js';
 
 const VIEW_REFRESHERS = {
-  'view-add': () => window.loadRecentTransactions && window.loadRecentTransactions(),
+  'view-add': () => window.loadV2TransactionView && window.loadV2TransactionView(),
   'view-history': () => {
     if (window.loadV2History) window.loadV2History();
-    if (window.loadAllTransactions) window.loadAllTransactions();
   },
   'view-budget': () => {
     if (window.loadV2Budget) window.loadV2Budget();
-    if (window.loadBudget) window.loadBudget();
   },
-  'view-graphs': () => window.loadGraphs && window.loadGraphs(),
   'view-settings': () => {
     if (window.loadV2Reconciliation) window.loadV2Reconciliation();
-    if (window.loadReconciliationList) window.loadReconciliationList();
   }
 };
 

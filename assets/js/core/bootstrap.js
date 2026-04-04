@@ -7,7 +7,7 @@ import { bindV2BudgetUi, loadV2Budget, renderV2Budget } from '../features/v2_bud
 import { bindV2HistoryUi, loadV2History, renderV2History } from '../features/v2_history.js';
 import { bindV2CategoryUi, hydrateV2CategoryContext, renderV2Categories } from '../features/v2_categories.js';
 import { bindV2ReconciliationUi, loadV2Reconciliation, renderV2Reconciliation } from '../features/v2_reconciliation.js';
-import { bindV2TransactionUi, hydrateV2TransactionContext, renderV2RecentTransactions, renderV2TransactionForm } from '../features/v2_transactions.js';
+import { bindV2TransactionUi, loadV2TransactionView, renderV2RecentTransactions, renderV2TransactionForm } from '../features/v2_transactions.js';
 import {
   bindHouseholdUi,
   createHousehold,
@@ -16,43 +16,22 @@ import {
   listHouseholds,
   renderHouseholdShell
 } from '../features/households.js';
-import {
-  saveTransaction,
-  loadRecentTransactions,
-  loadAllTransactions,
-  setHistoryTypeFilter,
-  editTransaction,
-  cancelEdit,
-  deleteTransaction,
-  loadCategoryTypes,
-  setTransactionType
-} from '../features/transactions.js';
-import { loadBudget } from '../features/budget.js';
-import { loadGraphs } from '../features/graphs.js';
 import { addReconciliation, deleteReconciliation, loadReconciliationList } from '../features/reconciliation.js';
 import { exportCSV, importCSV } from '../utils/csv_utils.js';
 import { initNavigation } from '../ui.js';
 
 const globalActions = {
-  saveTransaction,
-  editTransaction,
-  cancelEdit,
-  deleteTransaction,
-  setTransactionType,
   addCategory,
   editCategory,
   deleteCategory,
   createHouseholdAccount,
   createHousehold,
   createHouseholdCategoryByKind,
-  loadBudget,
+  loadCategories,
   loadV2Budget,
+  loadV2TransactionView,
   loadV2Reconciliation,
-  loadRecentTransactions,
-  loadAllTransactions,
-  loadGraphs,
   loadV2History,
-  setHistoryTypeFilter,
   listHouseholds,
   renderV2History,
   renderV2Budget,
@@ -70,6 +49,21 @@ function registerGlobalActions() {
   Object.entries(globalActions).forEach(([name, handler]) => {
     window[name] = handler;
   });
+}
+
+function bindLegacyToolsUi() {
+  const legacyToolsPanel = document.getElementById('legacyToolsPanel');
+
+  if (!legacyToolsPanel) return;
+
+  legacyToolsPanel.ontoggle = async () => {
+    if (!legacyToolsPanel.open) return;
+
+    await Promise.all([
+      loadCategories(),
+      loadReconciliationList()
+    ]);
+  };
 }
 
 function setAppMode(mode) {
@@ -129,19 +123,10 @@ async function initializeAuthenticatedApp() {
   renderAccountsSetup();
   await hydrateV2CategoryContext();
   renderV2Categories();
-  await hydrateV2TransactionContext();
-  renderV2TransactionForm();
-  renderV2RecentTransactions();
+  await loadV2TransactionView();
   await loadV2History();
   await loadV2Budget();
   await loadV2Reconciliation();
-
-  await Promise.all([
-    loadCategories(),
-    loadCategoryTypes()
-  ]);
-
-  cancelEdit();
   initNavigation();
 }
 
@@ -184,6 +169,7 @@ export async function initApp() {
   bindV2HistoryUi();
   bindV2BudgetUi();
   bindV2ReconciliationUi();
+  bindLegacyToolsUi();
 
   const user = await checkUser();
   if (user) {
