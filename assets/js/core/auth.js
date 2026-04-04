@@ -1,5 +1,5 @@
 import { db } from './database.js';
-import { setCurrentUser } from './app_state.js';
+import { clearCurrentHousehold, setCurrentUser } from './app_state.js';
 
 const authSection = document.getElementById('authSection');
 const appSection = document.getElementById('appSection');
@@ -15,6 +15,7 @@ function updateAuthUI(user) {
     appSection.classList.remove('hidden');
     bottomNav.classList.remove('hidden');
   } else {
+    clearCurrentHousehold();
     authSection.classList.remove('hidden');
     appSection.classList.add('hidden');
     bottomNav.classList.add('hidden');

@@ -2,6 +2,7 @@ import { markViewsLoaded } from './app_state.js';
 import { handleAuth, checkUser, setupLogoutListener } from './auth.js';
 import { loadViews } from './loader.js';
 import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
+import { createHousehold, createHouseholdCategoryByKind, hydrateHouseholdContext, listHouseholds } from '../features/households.js';
 import {
   saveTransaction,
   loadRecentTransactions,
@@ -28,11 +29,14 @@ const globalActions = {
   addCategory,
   editCategory,
   deleteCategory,
+  createHousehold,
+  createHouseholdCategoryByKind,
   loadBudget,
   loadRecentTransactions,
   loadAllTransactions,
   loadGraphs,
   setHistoryTypeFilter,
+  listHouseholds,
   exportCSV,
   importCSV,
   addReconciliation,
@@ -70,6 +74,12 @@ function bindAuthButtons() {
 }
 
 async function initializeAuthenticatedApp() {
+  try {
+    await hydrateHouseholdContext();
+  } catch (error) {
+    console.error('Failed to load household context:', error);
+  }
+
   await Promise.all([
     loadCategories(),
     loadCategoryTypes()
