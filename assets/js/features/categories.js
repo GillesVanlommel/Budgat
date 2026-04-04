@@ -1,11 +1,13 @@
-import { db } from './database.js';
+import { db } from '../core/database.js';
 
 export async function addCategory() {
   const nameInput = document.getElementById('newCategoryName');
   const budgetInput = document.getElementById('newCategoryBudget');
+  const typeInput = document.getElementById('newCategoryType');
 
   const name = nameInput.value;
   const budget = budgetInput.value;
+  const type = typeInput.value;
 
   const { data: { user } } = await db.auth.getUser();
 
@@ -15,16 +17,18 @@ export async function addCategory() {
   }
 
   const { error } = await db.from('categories').insert([{
-      name: name,
-      monthly_budget: budget ? parseFloat(budget) : 0,
-      user_id: user.id
-    }]);
+    name: name,
+    monthly_budget: budget ? parseFloat(budget) : 0,
+    type: type,
+    user_id: user.id
+  }]);
 
   if (error) {
     alert(error.message);
   } else {
     nameInput.value = '';
     budgetInput.value = '';
+    typeInput.value = 'expense';
     loadCategories();
   }
 }
@@ -46,14 +50,24 @@ export async function loadCategories() {
       return;
     }
 
-    badgeList.innerHTML = data.map(c => `
+    const typeLabels = {
+      income: { label: 'Income', class: 'bg-emerald-100 text-emerald-700' },
+      expense: { label: 'Expense', class: 'bg-red-100 text-red-700' },
+      transfer: { label: 'Transfer', class: 'bg-blue-100 text-blue-700' },
+      null: { label: 'Set type', class: 'bg-slate-100 text-slate-500' }
+    };
+
+    badgeList.innerHTML = data.map(c => {
+      const typeInfo = typeLabels[c.type] || typeLabels[null];
+      return `
       <div class="flex items-center justify-between p-2 px-3 bg-white rounded-lg border border-slate-200 hover:border-indigo-100 transition-colors">
           <div class="flex items-center gap-3">
               <span class="font-semibold text-slate-700 text-sm">${c.name}</span>
               <span class="text-xs font-mono bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">€${parseFloat(c.monthly_budget || 0).toFixed(0)}</span>
+              <span class="text-[10px] font-medium px-2 py-0.5 rounded-full ${typeInfo.class}">${typeInfo.label}</span>
           </div>
           <div class="flex items-center">
-              <button onclick="editCategory('${c.id}', '${c.name}', ${c.monthly_budget})" class="text-slate-400 hover:text-indigo-600 p-1.5 transition-colors">
+              <button onclick="editCategory('${c.id}', '${c.name}', ${c.monthly_budget}, '${c.type || ''}')" class="text-slate-400 hover:text-indigo-600 p-1.5 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" /></svg>
               </button>
               <button onclick="deleteCategory('${c.id}')" class="text-slate-400 hover:text-red-500 p-1.5 transition-colors">
@@ -61,7 +75,7 @@ export async function loadCategories() {
               </button>
           </div>
       </div>
-    `).join('');
+    `}).join('');
   }
 }
 
@@ -72,13 +86,15 @@ export async function deleteCategory(id) {
   else loadCategories();
 }
 
-export async function editCategory(id, currentName, currentBudget) {
+export async function editCategory(id, currentName, currentBudget, currentType = '') {
   const nameInput = document.getElementById('newCategoryName');
   const budgetInput = document.getElementById('newCategoryBudget');
+  const typeInput = document.getElementById('newCategoryType');
   const addBtn = document.querySelector('button[onclick="addCategory()"]');
 
   nameInput.value = currentName;
   budgetInput.value = currentBudget;
+  typeInput.value = currentType || 'expense';
 
   addBtn.innerText = 'Update';
   addBtn.onclick = () => updateCategory(id);
@@ -96,10 +112,12 @@ export async function editCategory(id, currentName, currentBudget) {
 async function updateCategory(id) {
   const name = document.getElementById('newCategoryName').value;
   const budget = document.getElementById('newCategoryBudget').value;
+  const type = document.getElementById('newCategoryType').value;
 
   const { error } = await db.from('categories').update({
       name: name,
-      monthly_budget: budget ? parseFloat(budget) : 0
+      monthly_budget: budget ? parseFloat(budget) : 0,
+      type: type
     }).eq('id', id);
 
   if (error) {
@@ -113,11 +131,13 @@ async function updateCategory(id) {
 function resetCategoryForm() {
   const nameInput = document.getElementById('newCategoryName');
   const budgetInput = document.getElementById('newCategoryBudget');
+  const typeInput = document.getElementById('newCategoryType');
   const addBtn = document.querySelector('button[onclick^="updateCategory"]'); 
   const cancelBtn = document.getElementById('cancelCatEdit');
 
   nameInput.value = '';
   budgetInput.value = '';
+  if (typeInput) typeInput.value = 'expense';
 
   if (addBtn) {
     addBtn.innerText = 'Add';

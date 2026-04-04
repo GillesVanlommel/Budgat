@@ -3,12 +3,20 @@
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-4 text-slate-700">Manage Categories</h2>
 
-    <div class="flex flex-col sm:flex-row gap-2 mb-6">
+    <div class="flex flex-col sm:flex-row gap-2 mb-4">
       <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Groceries)"
         class="flex-grow p-2 border rounded-lg">
 
       <input type="number" id="newCategoryBudget" placeholder="Monthly Budget (€)"
         class="w-full sm:w-32 p-2 border rounded-lg">
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-2 mb-6">
+      <select id="newCategoryType" class="flex-grow p-2 border rounded-lg">
+        <option value="expense">Expense</option>
+        <option value="income">Income</option>
+        <option value="transfer">Transfer (Savings)</option>
+      </select>
 
       <button onclick="addCategory()"
         class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">

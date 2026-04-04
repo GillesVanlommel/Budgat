@@ -1,7 +1,7 @@
-import { db } from './database.js';
-import { loadCategories } from './categories.js';
-import { loadRecentTransactions } from './transactions.js';
-import { initNavigation } from './ui.js'; // Import navigation logic
+import { db } from '../core/database.js';
+import { loadCategories } from '../features/categories.js';
+import { loadRecentTransactions } from '../features/transactions.js';
+import { initNavigation } from '../ui.js';
 
 const authSection = document.getElementById('authSection');
 const appSection = document.getElementById('appSection');

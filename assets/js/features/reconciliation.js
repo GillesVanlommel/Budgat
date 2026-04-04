@@ -1,4 +1,4 @@
-import { db } from './database.js';
+import { db } from '../core/database.js';
 
 export async function addReconciliation() {
   const amountInput = document.getElementById('reconAmount');

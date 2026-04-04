@@ -1,4 +1,5 @@
-import { db } from './database.js';
+import { db } from '../core/database.js';
+import { getTransactionType } from './transactions.js';
 google.charts.load('current', { 'packages': ['sankey'] });
 
 let categoryChartInstance = null;
@@ -41,6 +42,8 @@ export async function loadGraphs() {
   const monthlyStats = {}; 
   
   const categoryTotals = {}; 
+  const categoryTotalsIncome = {};
+  const transferTotals = {};
   const dailyAccumulation = {}; 
 
   const daysInMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0).getDate();
@@ -50,28 +53,31 @@ export async function loadGraphs() {
     const [year, month, day] = t.date.split('-').map(Number);
     const dateObj = new Date(year, month - 1, day);
     const monthKey = dateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-    const amount = parseFloat(t.amount);
-    const isIncomeCat = t.category.toLowerCase() === 'inkomsten';
+    const amount = Math.abs(parseFloat(t.amount));
+    const txType = t.type || getTransactionType(amount, t.category);
 
     // Initialize monthly stats if not exists
     if (!monthlyStats[monthKey]) {
-        monthlyStats[monthKey] = { income: 0, expense: 0 };
+        monthlyStats[monthKey] = { income: 0, expense: 0, transfer: 0 };
     }
 
-    // Logic: Negative amount = Income (green in list), Positive = Expense
-    if (amount < 0) {
-        monthlyStats[monthKey].income += Math.abs(amount);
-    } else if (!isIncomeCat) {
+    // Categorize by type
+    if (txType === 'income') {
+        monthlyStats[monthKey].income += amount;
+    } else if (txType === 'transfer') {
+        monthlyStats[monthKey].transfer += amount;
+    } else {
         monthlyStats[monthKey].expense += amount;
     }
 
     // Current Month Totals for Top Cards
     if (monthKey === currentMonthKey) {
-      if (amount < 0) {
-        thisMonthIncome += Math.abs(amount);
-      }
-      
-      if (!isIncomeCat && amount > 0) {
+      if (txType === 'income') {
+        thisMonthIncome += amount;
+      } else if (txType === 'transfer') {
+        if (!transferTotals[t.category]) transferTotals[t.category] = 0;
+        transferTotals[t.category] += amount;
+      } else if (txType === 'expense') {
         thisMonthExpense += amount;
         if (!categoryTotals[t.category]) categoryTotals[t.category] = 0;
         categoryTotals[t.category] += amount;
@@ -79,7 +85,7 @@ export async function loadGraphs() {
       }
     }
 
-    if (monthKey === lastMonthKey && !isIncomeCat && amount > 0) {
+    if (monthKey === lastMonthKey && txType === 'expense') {
       lastMonthExpense += amount;
     }
   });
@@ -103,8 +109,8 @@ export async function loadGraphs() {
   document.getElementById('metricTotal').innerText = `€${thisMonthExpense.toFixed(0)}`;
 
   const totalExpenseBudget = categories
-    .filter(c => c.name.toLowerCase() !== 'inkomsten')
-    .reduce((sum, c) => sum + (c.monthly_budget || 0), 0);
+    .filter(c => c.type === 'expense' || !c.type)
+    .reduce((sum, c) => sum + (parseFloat(c.monthly_budget) || 0), 0);
     
   const statusEl = document.getElementById('metricStatus');
   const cardStatus = document.getElementById('cardStatus');
@@ -136,7 +142,7 @@ export async function loadGraphs() {
   renderDailyChart(dailyLabels, dailyData);
   
   if (typeof google !== 'undefined' && google.charts) {
-    google.charts.setOnLoadCallback(() => renderSankeyChart(thisMonthIncome, categoryTotals, thisMonthExpense));
+    google.charts.setOnLoadCallback(() => renderSankeyChart(thisMonthIncome, categoryTotals, thisMonthExpense, transferTotals));
   }
 }
 
@@ -222,7 +228,7 @@ function renderDailyChart(labels, data) {
   });
 }
 
-function renderSankeyChart(totalIncome, categoryTotals, totalSpent) {
+function renderSankeyChart(totalIncome, categoryTotals, totalSpent, transferTotals = {}) {
   const container = document.getElementById('sankey_chart');
   if (!container) return;
 
@@ -233,17 +239,34 @@ function renderSankeyChart(totalIncome, categoryTotals, totalSpent) {
 
   const rows = [];
 
-  const sourceNode = totalIncome > 0 ? `Income (€${totalIncome.toFixed(0)})` : 'Funds';
+  const incomeNode = totalIncome > 0 ? `Income (€${totalIncome.toFixed(0)})` : 'Funds';
 
+  // Flow from income to expense categories
   Object.entries(categoryTotals).forEach(([category, amount]) => {
     if (amount > 0) {
-      rows.push([sourceNode, category, amount]);
+      rows.push([incomeNode, category, amount]);
     }
   });
 
-  if (totalIncome > totalSpent) {
-    const savings = totalIncome - totalSpent;
-    rows.push([sourceNode, 'Savings / Unallocated', savings]);
+  // Flow from income to transfers (savings)
+  const totalTransfers = Object.values(transferTotals).reduce((sum, v) => sum + v, 0);
+  Object.entries(transferTotals).forEach(([category, amount]) => {
+    if (amount > 0) {
+      rows.push([incomeNode, category, amount]);
+    }
+  });
+
+  // If there's money left, show as unallocated
+  const totalOut = totalSpent + totalTransfers;
+  if (totalIncome > totalOut) {
+    const savings = totalIncome - totalOut;
+    rows.push([incomeNode, 'Unallocated', savings]);
+  }
+
+  // If overspent, show where it came from
+  if (totalOut > totalIncome) {
+    const overspend = totalOut - totalIncome;
+    rows.push(['Expenses', 'Over Budget', overspend]);
   }
 
   if (rows.length === 0) {

@@ -4,9 +4,16 @@
     <div class="space-y-3">
       
       <input type="hidden" id="transactionId">
+      <input type="hidden" id="transactionType" value="expense">
       
       <input type="date" id="date" class="w-full p-2 border rounded-lg text-slate-700">
       <input type="text" id="description" placeholder="What (Description)" class="w-full p-2 border rounded-lg">
+      
+      <div class="flex gap-2">
+        <button type="button" id="typeExpense" onclick="setTransactionType('expense')" class="flex-1 py-2 rounded-lg font-medium transition border-2 border-red-200 bg-red-50 text-red-700">Expense</button>
+        <button type="button" id="typeIncome" onclick="setTransactionType('income')" class="flex-1 py-2 rounded-lg font-medium transition border-2 border-slate-200 bg-white text-slate-400">Income</button>
+      </div>
+      
       <select id="categorySelect" class="w-full p-2 border rounded-lg">
         <option value="">Select a Category</option>
       </select>

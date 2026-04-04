@@ -81,61 +81,41 @@
   </nav>
 
   <script type="module">
-    import { checkUser, handleAuth, setupLogoutListener } from './assets/js/auth.js';
-    import { addCategory, deleteCategory, loadCategories, editCategory } from './assets/js/categories.js';
+    import * as app from './assets/js/index.js';
 
-    // 1. Updated Import: Only core transaction logic
-    import {
-      saveTransaction, loadRecentTransactions, loadAllTransactions, setHistoryTypeFilter,
-      editTransaction, cancelEdit, deleteTransaction
-    } from './assets/js/transactions.js';
+    window.saveTransaction = app.saveTransaction;
+    window.editTransaction = app.editTransaction;
+    window.cancelEdit = app.cancelEdit;
+    window.deleteTransaction = app.deleteTransaction;
+    window.setTransactionType = app.setTransactionType
 
-    // 2. New Import: CSV Utils
-    import { exportCSV, importCSV } from './assets/js/csv_utils.js';
+    window.addCategory = app.addCategory;
+    window.editCategory = app.editCategory;
+    window.deleteCategory = app.deleteCategory;
 
-    // 3. New Import: Reconciliation
-    import { addReconciliation, deleteReconciliation, loadReconciliationList } from './assets/js/reconciliation.js';
+    window.loadBudget = app.loadBudget;
+    window.loadRecentTransactions = app.loadRecentTransactions;
+    window.loadAllTransactions = app.loadAllTransactions;
+    window.loadGraphs = app.loadGraphs;
+    window.setHistoryTypeFilter = app.setHistoryTypeFilter;
 
-    import { initNavigation } from './assets/js/ui.js';
-    import { loadViews } from './assets/js/loader.js';
-    import { loadBudget } from './assets/js/budget.js';
-    import { loadGraphs } from './assets/js/graphs.js';
+    window.exportCSV = app.exportCSV;
+    window.importCSV = app.importCSV;
+    window.addReconciliation = app.addReconciliation;
+    window.deleteReconciliation = app.deleteReconciliation;
+    window.loadReconciliationList = app.loadReconciliationList;
 
-    // 4. Attach window functions (Now mapping to the correct files)
-    window.saveTransaction = saveTransaction;
-    window.editTransaction = editTransaction;
-    window.cancelEdit = cancelEdit;
-    window.deleteTransaction = deleteTransaction;
+    document.getElementById('loginBtn').addEventListener('click', () => app.handleAuth('login'));
+    document.getElementById('signupBtn').addEventListener('click', () => app.handleAuth('signup'));
 
-    window.addCategory = addCategory;
-    window.editCategory = editCategory;
-    window.deleteCategory = deleteCategory;
-
-    window.loadBudget = loadBudget;
-    window.loadRecentTransactions = loadRecentTransactions;
-    window.loadAllTransactions = loadAllTransactions;
-    window.loadGraphs = loadGraphs;
-    window.setHistoryTypeFilter = setHistoryTypeFilter;
-
-    // These now point to the new files
-    window.exportCSV = exportCSV;
-    window.importCSV = importCSV;
-    window.addReconciliation = addReconciliation;
-    window.deleteReconciliation = deleteReconciliation;
-    window.loadReconciliationList = loadReconciliationList;
-
-    // Attach Auth listeners
-    document.getElementById('loginBtn').addEventListener('click', () => handleAuth('login'));
-    document.getElementById('signupBtn').addEventListener('click', () => handleAuth('signup'));
-
-    // MAIN INITIALIZATION
     async function initApp() {
-      await loadViews();
-      setupLogoutListener();
-      initNavigation();
-      checkUser();
-      loadRecentTransactions();
-      cancelEdit();
+      await app.loadViews();
+      await app.loadCategoryTypes();
+      app.setupLogoutListener();
+      app.initNavigation();
+      app.checkUser();
+      app.loadRecentTransactions();
+      app.cancelEdit();
     }
 
     initApp();
