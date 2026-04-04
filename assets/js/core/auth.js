@@ -51,8 +51,8 @@ export async function handleAuth(type) {
 }
 
 export function setupLogoutListener() {
-  const logoutBtn = document.getElementById('logoutBtn');
-  if (logoutBtn) {
+  const logoutButtons = Array.from(document.querySelectorAll('[data-logout="true"], #logoutBtn'));
+  logoutButtons.forEach((logoutBtn) => {
     logoutBtn.onclick = async () => {
       const { error } = await db.auth.signOut();
       if (error) {
@@ -61,5 +61,5 @@ export function setupLogoutListener() {
         window.location.reload();
       }
     };
-  }
+  });
 }
