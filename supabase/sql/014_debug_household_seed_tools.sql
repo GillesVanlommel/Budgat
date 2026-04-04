@@ -53,15 +53,67 @@ begin
   with members as (
     select
       hm.id as member_id,
-      coalesce(nullif(btrim(hm.display_name), ''), 'Member') as base_name,
+      coalesce(
+        nullif(btrim(au.raw_user_meta_data ->> 'full_name'), ''),
+        nullif(btrim(au.raw_user_meta_data ->> 'name'), ''),
+        nullif(
+          btrim(
+            concat_ws(
+              ' ',
+              au.raw_user_meta_data ->> 'first_name',
+              au.raw_user_meta_data ->> 'last_name'
+            )
+          ),
+          ''
+        ),
+        nullif(btrim(au.raw_user_meta_data ->> 'preferred_username'), ''),
+        nullif(btrim(split_part(au.email, '@', 1)), ''),
+        nullif(btrim(hm.display_name), ''),
+        'Member'
+      ) as base_name,
       row_number() over (
-        partition by coalesce(nullif(btrim(hm.display_name), ''), 'Member')
+        partition by coalesce(
+          nullif(btrim(au.raw_user_meta_data ->> 'full_name'), ''),
+          nullif(btrim(au.raw_user_meta_data ->> 'name'), ''),
+          nullif(
+            btrim(
+              concat_ws(
+                ' ',
+                au.raw_user_meta_data ->> 'first_name',
+                au.raw_user_meta_data ->> 'last_name'
+              )
+            ),
+            ''
+          ),
+          nullif(btrim(au.raw_user_meta_data ->> 'preferred_username'), ''),
+          nullif(btrim(split_part(au.email, '@', 1)), ''),
+          nullif(btrim(hm.display_name), ''),
+          'Member'
+        )
         order by hm.joined_at asc, hm.id asc
       ) as name_seq,
       count(*) over (
-        partition by coalesce(nullif(btrim(hm.display_name), ''), 'Member')
+        partition by coalesce(
+          nullif(btrim(au.raw_user_meta_data ->> 'full_name'), ''),
+          nullif(btrim(au.raw_user_meta_data ->> 'name'), ''),
+          nullif(
+            btrim(
+              concat_ws(
+                ' ',
+                au.raw_user_meta_data ->> 'first_name',
+                au.raw_user_meta_data ->> 'last_name'
+              )
+            ),
+            ''
+          ),
+          nullif(btrim(au.raw_user_meta_data ->> 'preferred_username'), ''),
+          nullif(btrim(split_part(au.email, '@', 1)), ''),
+          nullif(btrim(hm.display_name), ''),
+          'Member'
+        )
       ) as name_count
     from public.household_members hm
+    join auth.users au on au.id = hm.user_id
     where hm.household_id = p_household_id
   ),
   inserted as (
