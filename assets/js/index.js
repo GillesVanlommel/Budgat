@@ -2,7 +2,6 @@ export { checkUser, handleAuth, setupLogoutListener } from './core/auth.js';
 export { initApp } from './core/bootstrap.js';
 export { loadViews } from './core/loader.js';
 
-export { addCategory, deleteCategory, loadCategories, editCategory } from './features/categories.js';
 export {
   bindAccountsUi,
   createHouseholdAccount,
@@ -56,19 +55,16 @@ export {
 } from './features/v2_transactions.js';
 export {
   bindHouseholdUi,
+  createHouseholdInvite,
   createHousehold,
   createHouseholdCategoryByKind,
   hydrateHouseholdContext,
+  joinHouseholdByInvite,
+  listHouseholdInvites,
   listHouseholds,
+  revokeHouseholdInvite,
   renderHouseholdShell
 } from './features/households.js';
-export {
-  saveTransaction, loadRecentTransactions, loadAllTransactions, setHistoryTypeFilter,
-  editTransaction, cancelEdit, deleteTransaction, getTransactionType, loadCategoryTypes, setTransactionType
-} from './features/transactions.js';
-export { loadBudget } from './features/budget.js';
-export { loadGraphs } from './features/graphs.js';
-export { addReconciliation, deleteReconciliation, loadReconciliationList } from './features/reconciliation.js';
-export { exportCSV, importCSV } from './utils/csv_utils.js';
+export { exportCSV, importCSV } from './utils/v2_csv_utils.js';
 
 export { initNavigation, switchView } from './ui.js';

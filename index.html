@@ -8,7 +8,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://www.gstatic.com/charts/loader.js"></script>
 </head>
 
 <body class="bg-slate-50 text-slate-900 font-sans">
@@ -54,6 +53,21 @@
           <button id="createHouseholdBtn" type="submit"
             class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700">
             Create Household
+          </button>
+        </form>
+
+        <div class="my-5 border-t border-slate-200"></div>
+
+        <h3 class="text-base font-semibold mb-2 text-slate-800">Join Existing Household</h3>
+        <p class="text-sm text-slate-500 mb-3">Enter an invite code shared by the household owner/admin.</p>
+
+        <form id="householdJoinForm" class="space-y-3">
+          <input type="text" id="householdInviteCodeInput" placeholder="Invite Code" class="w-full p-2 border rounded-lg uppercase">
+          <input type="text" id="householdJoinDisplayNameInput" placeholder="Your Display Name (Optional)" class="w-full p-2 border rounded-lg">
+          <div id="householdJoinError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+          <button id="joinHouseholdBtn" type="submit"
+            class="w-full border border-indigo-300 text-indigo-700 bg-indigo-50 py-2 rounded-lg font-medium hover:bg-indigo-100">
+            Join Household
           </button>
         </form>
       </div>

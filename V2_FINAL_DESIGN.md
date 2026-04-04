@@ -24,18 +24,20 @@ Status as of `2026-04-04`.
 - The primary budget screen is month-based and uses `budget_months` and `budget_lines` instead of `monthly_budget` on categories.
 - Reconciliation is now account-based using `account_reconciliations`.
 - The analytics screen has been reintroduced on top of the V2 household transaction model.
+- Legacy V1 frontend code paths have been removed from the app.
 - The app can be set up from inside the UI for household, accounts, categories, budget, transactions, and reconciliation.
-- The primary app navigation is now V2-first, with legacy tools hidden from the main flow during cutover.
+- The primary app navigation is now fully V2.
+- A V1 schema removal script has been prepared: `supabase/sql/009_remove_v1_schema.sql`.
+- Account visibility + simplified category flow have been implemented in code, with migration prepared in `supabase/sql/010_account_visibility_and_category_simplification.sql`.
 
-### Still to do
+### Still to do (ranked: low -> high importance)
 
-- Build household invitations or join flows so another user can join an existing household from inside the app.
-- Add first-run defaults for suggested accounts and starter categories to reduce setup friction.
-- Replace legacy CSV import/export with V2-aware import/export tooling.
-- Decide how much legacy data migration support is needed and add migration helpers for any data you still want to preserve.
-- Remove the remaining legacy code paths after the V2 replacement features are fully in place.
-- Do the explicit code cleanup pass so the codebase is easier to extend before bigger product iterations.
-- Add automated tests around the new SQL RPCs and the highest-risk V2 frontend flows.
+1. Add first-run defaults for suggested accounts and starter categories to reduce setup friction.
+2. Build household invitations or join flows so another user can join an existing household from inside the app.
+3. Do the explicit code cleanup pass so the codebase is easier to extend before bigger product iterations.
+4. Add automated tests around the new SQL RPCs and the highest-risk V2 frontend flows.
+5. Run `supabase/sql/010_account_visibility_and_category_simplification.sql` in Supabase to activate account visibility filtering and the simplified category-create RPC.
+6. Run `supabase/sql/009_remove_v1_schema.sql` in Supabase to drop V1 tables from the database.
 
 ## 1. Product Definition
 
