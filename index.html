@@ -81,42 +81,7 @@
   </nav>
 
   <script type="module">
-    import * as app from './assets/js/index.js';
-
-    window.saveTransaction = app.saveTransaction;
-    window.editTransaction = app.editTransaction;
-    window.cancelEdit = app.cancelEdit;
-    window.deleteTransaction = app.deleteTransaction;
-    window.setTransactionType = app.setTransactionType
-
-    window.addCategory = app.addCategory;
-    window.editCategory = app.editCategory;
-    window.deleteCategory = app.deleteCategory;
-
-    window.loadBudget = app.loadBudget;
-    window.loadRecentTransactions = app.loadRecentTransactions;
-    window.loadAllTransactions = app.loadAllTransactions;
-    window.loadGraphs = app.loadGraphs;
-    window.setHistoryTypeFilter = app.setHistoryTypeFilter;
-
-    window.exportCSV = app.exportCSV;
-    window.importCSV = app.importCSV;
-    window.addReconciliation = app.addReconciliation;
-    window.deleteReconciliation = app.deleteReconciliation;
-    window.loadReconciliationList = app.loadReconciliationList;
-
-    document.getElementById('loginBtn').addEventListener('click', () => app.handleAuth('login'));
-    document.getElementById('signupBtn').addEventListener('click', () => app.handleAuth('signup'));
-
-    async function initApp() {
-      await app.loadViews();
-      await app.loadCategoryTypes();
-      app.setupLogoutListener();
-      app.initNavigation();
-      app.checkUser();
-      app.loadRecentTransactions();
-      app.cancelEdit();
-    }
+    import { initApp } from './assets/js/index.js';
 
     initApp();
   </script>

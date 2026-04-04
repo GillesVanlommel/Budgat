@@ -1,55 +1,49 @@
-// budgat/assets/js/ui.js
+import { setCurrentView } from './core/app_state.js';
+import { DEFAULT_VIEW, getViewIds } from './core/views.js';
 
-// 1. Define the available views
-const views = ['view-add', 'view-history', 'view-budget', 'view-graphs', 'view-settings'];
+const VIEW_REFRESHERS = {
+  'view-add': () => window.loadRecentTransactions && window.loadRecentTransactions(),
+  'view-history': () => window.loadAllTransactions && window.loadAllTransactions(),
+  'view-budget': () => window.loadBudget && window.loadBudget(),
+  'view-graphs': () => window.loadGraphs && window.loadGraphs(),
+  'view-settings': () => window.loadReconciliationList && window.loadReconciliationList()
+};
 
 export function initNavigation() {
-  // Attach click listeners to the bottom nav buttons
   document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
-      // Find the closest button element (in case user clicks the icon SVG)
       const targetBtn = e.target.closest('.nav-btn');
+      if (!targetBtn) return;
+
       const viewId = targetBtn.dataset.target;
       switchView(viewId);
     });
   });
 
-  // Set default view
-  switchView('view-add');
+  switchView(DEFAULT_VIEW);
 }
 
 export function switchView(targetId) {
-  // 1. Hide all
-  views.forEach(id => {
+  getViewIds().forEach(id => {
     const el = document.getElementById(id);
-    if(el) el.classList.add('hidden');
+    if (el) el.classList.add('hidden');
   });
-  // 2. Reset Container Width (Default to narrow phone view)
+
   const container = document.getElementById('mainContainer');
   if (container) {
     container.classList.add('max-w-md');
     container.classList.remove('max-w-7xl');
   }
-  
-  // 2. Show target
+
   const targetElement = document.getElementById(targetId);
   if (targetElement) {
     targetElement.classList.remove('hidden');
+    setCurrentView(targetId);
 
-    // Trigger specific loads
-    if (targetId === 'view-budget' && window.loadBudget) window.loadBudget();
-    
-    // Load history when tab is clicked
-    if (targetId === 'view-history' && window.loadAllTransactions) window.loadAllTransactions();
-    
-    // Refresh recent list if going back to add
-    if (targetId === 'view-add' && window.loadRecentTransactions) window.loadRecentTransactions();
-
-    // Load Graphs
-    if (targetId === 'view-graphs' && window.loadGraphs) window.loadGraphs();
+    const refreshView = VIEW_REFRESHERS[targetId];
+    if (refreshView) refreshView();
   }
 
-  // 3. Update Bottom Nav Active State
   document.querySelectorAll('.nav-btn').forEach(btn => {
     if (btn.dataset.target === targetId) {
       btn.classList.add('text-indigo-600');

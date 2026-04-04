@@ -1,16 +1,7 @@
-// budgat/assets/js/loader.js
+import { VIEW_DEFINITIONS } from './views.js';
 
 export async function loadViews() {
-  const views = [
-    { id: 'view-add', file: 'views/add.html' },
-    { id: 'view-history', file: 'views/history.html' },
-    { id: 'view-budget', file: 'views/budget.html' },
-    { id: 'view-graphs', file: 'views/graphs.html' },
-    { id: 'view-settings', file: 'views/settings.html' }
-  ];
-
-  // We loop through the list and fetch each file
-  for (const view of views) {
+  for (const view of VIEW_DEFINITIONS) {
     const container = document.getElementById(view.id);
     if (container) {
       try {
