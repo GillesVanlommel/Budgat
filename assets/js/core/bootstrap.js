@@ -6,6 +6,7 @@ import { bindV2BudgetUi, loadV2Budget, renderV2Budget } from '../features/v2_bud
 import { bindV2GraphsUi, loadV2Graphs } from '../features/v2_graphs.js';
 import { bindV2HistoryUi, loadV2History, renderV2History } from '../features/v2_history.js';
 import { bindV2CategoryUi, hydrateV2CategoryContext, renderV2Categories } from '../features/v2_categories.js';
+import { bindDebugToolsUi } from '../features/debug_tools.js';
 import { bindV2ReconciliationUi, loadV2Reconciliation, renderV2Reconciliation } from '../features/v2_reconciliation.js';
 import { bindV2TransactionUi, loadV2TransactionView, renderV2RecentTransactions, renderV2TransactionForm } from '../features/v2_transactions.js';
 import {
@@ -151,6 +152,19 @@ export async function initApp() {
   bindV2BudgetUi();
   bindV2GraphsUi();
   bindV2ReconciliationUi();
+  bindDebugToolsUi({
+    onDebugDataChanged: async () => {
+      await hydrateAccountContext();
+      renderAccountsSetup();
+      await hydrateV2CategoryContext();
+      renderV2Categories();
+      await loadV2TransactionView();
+      await loadV2History();
+      await loadV2Budget();
+      await loadV2Graphs();
+      await loadV2Reconciliation();
+    }
+  });
 
   const user = await checkUser();
   if (user) {

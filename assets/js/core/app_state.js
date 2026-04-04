@@ -4,7 +4,6 @@ const appState = {
   households: [],
   householdAccounts: [],
   householdMembers: [],
-  v2CategoryKinds: [],
   v2HouseholdCategories: [],
   v2RecentTransactions: [],
   v2HistoryTransactions: [],
@@ -54,14 +53,6 @@ export function getHouseholdMembers() {
   return appState.householdMembers;
 }
 
-export function setV2CategoryKinds(categoryKinds) {
-  appState.v2CategoryKinds = Array.isArray(categoryKinds) ? categoryKinds : [];
-}
-
-export function getV2CategoryKinds() {
-  return appState.v2CategoryKinds;
-}
-
 export function setV2HouseholdCategories(categories) {
   appState.v2HouseholdCategories = Array.isArray(categories) ? categories : [];
 }
@@ -104,7 +95,6 @@ export function clearCurrentHousehold() {
   appState.households = [];
   appState.householdAccounts = [];
   appState.householdMembers = [];
-  appState.v2CategoryKinds = [];
   appState.v2HouseholdCategories = [];
   appState.v2RecentTransactions = [];
   appState.v2HistoryTransactions = [];

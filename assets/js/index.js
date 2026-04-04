@@ -13,7 +13,6 @@ export {
 export {
   bindV2CategoryUi,
   hydrateV2CategoryContext,
-  listCategoryKinds,
   listV2HouseholdCategories,
   renderV2Categories
 } from './features/v2_categories.js';

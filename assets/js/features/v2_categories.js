@@ -2,9 +2,7 @@ import { db } from '../core/database.js';
 import {
   getCurrentHousehold,
   getHouseholdAccounts,
-  getV2CategoryKinds,
   getV2HouseholdCategories,
-  setV2CategoryKinds,
   setV2HouseholdCategories
 } from '../core/app_state.js';
 
@@ -35,13 +33,6 @@ function setV2CategoryError(message) {
   errorBox.classList.remove('hidden');
 }
 
-export async function listCategoryKinds() {
-  const { data, error } = await db.rpc('list_category_kinds');
-  if (error) throw error;
-  setV2CategoryKinds(data || []);
-  return getV2CategoryKinds();
-}
-
 export async function listV2HouseholdCategories(householdId, accountId = null) {
   const { data, error } = await db.rpc('list_household_categories', {
     p_household_id: householdId,
@@ -57,22 +48,14 @@ export async function hydrateV2CategoryContext() {
   const household = getCurrentHousehold();
   const householdId = household?.household_id;
 
-  const categoryKindsPromise = getV2CategoryKinds().length > 0
-    ? Promise.resolve(getV2CategoryKinds())
-    : listCategoryKinds();
-
   if (!householdId) {
-    const categoryKinds = await categoryKindsPromise;
     setV2HouseholdCategories([]);
-    return { categoryKinds, categories: [] };
+    return { categories: [] };
   }
 
-  const [categoryKinds, categories] = await Promise.all([
-    categoryKindsPromise,
-    listV2HouseholdCategories(householdId)
-  ]);
+  const categories = await listV2HouseholdCategories(householdId);
 
-  return { categoryKinds, categories };
+  return { categories };
 }
 
 export function renderV2Categories() {
@@ -128,7 +111,7 @@ export function renderV2Categories() {
             </div>
           </div>
           <div class="text-right">
-            <div class="text-xs text-slate-400">${category.category_kind_name}</div>
+            <div class="text-xs text-slate-400">${category.account_name || 'Unknown account'}</div>
           </div>
         </div>
       `).join('');
