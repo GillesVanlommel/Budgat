@@ -46,6 +46,61 @@
   </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">V2 Account Reconciliation</h2>
+    <p class="text-sm text-slate-500 mb-4">Reconcile each account against its calculated V2 balance. This is the new account-based checkpoint flow.</p>
+
+    <div id="v2ReconciliationSetupHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
+      Add at least one household account before saving reconciliation checkpoints.
+    </div>
+
+    <div id="v2ReconciliationError" class="hidden mb-4 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+
+    <div id="v2ReconciliationAccountSummary" class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6"></div>
+
+    <form id="v2ReconciliationForm" class="space-y-3 mb-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <select id="v2ReconciliationAccount" class="w-full p-2 border rounded-lg">
+          <option value="">Select account</option>
+        </select>
+
+        <input type="date" id="v2ReconciliationDate" class="w-full p-2 border rounded-lg">
+      </div>
+
+      <input
+        type="number"
+        id="v2ReconciliationActual"
+        step="0.01"
+        placeholder="Actual balance (EUR)"
+        class="w-full p-2 border rounded-lg"
+      >
+
+      <textarea
+        id="v2ReconciliationNotes"
+        rows="2"
+        placeholder="Optional note about this checkpoint"
+        class="w-full p-2 border rounded-lg"
+      ></textarea>
+
+      <button id="v2ReconciliationSubmitBtn"
+        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
+        Save V2 Checkpoint
+      </button>
+    </form>
+
+    <div id="v2ReconciliationSelectedSummary" class="mb-4"></div>
+
+    <div id="v2ReconciliationEmptyHint" class="hidden text-sm text-slate-500 italic mb-3">
+      No V2 checkpoints saved for this account yet.
+    </div>
+
+    <div id="v2ReconciliationList" class="space-y-3"></div>
+
+    <div class="text-xs text-slate-400 border-t border-slate-100 pt-4 mt-4">
+      Legacy checkpoints remain below until the old reconciliation flow is removed.
+    </div>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-2 text-slate-700">V2 Categories</h2>
     <p class="text-sm text-slate-500 mb-4">These categories use stable category kinds behind the scenes and will power the new budgeting model.</p>
 

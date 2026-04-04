@@ -32,6 +32,15 @@ export {
   renderV2History
 } from './features/v2_history.js';
 export {
+  bindV2ReconciliationUi,
+  deleteV2AccountReconciliation,
+  listHouseholdAccountBalances,
+  listV2AccountReconciliations,
+  loadV2Reconciliation,
+  renderV2Reconciliation,
+  upsertV2AccountReconciliation
+} from './features/v2_reconciliation.js';
+export {
   bindV2TransactionUi,
   createV2Transaction,
   hydrateV2TransactionContext,

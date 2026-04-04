@@ -12,7 +12,10 @@ const VIEW_REFRESHERS = {
     if (window.loadBudget) window.loadBudget();
   },
   'view-graphs': () => window.loadGraphs && window.loadGraphs(),
-  'view-settings': () => window.loadReconciliationList && window.loadReconciliationList()
+  'view-settings': () => {
+    if (window.loadV2Reconciliation) window.loadV2Reconciliation();
+    if (window.loadReconciliationList) window.loadReconciliationList();
+  }
 };
 
 export function initNavigation() {
