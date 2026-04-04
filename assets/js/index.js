@@ -19,6 +19,14 @@ export {
   renderV2Categories
 } from './features/v2_categories.js';
 export {
+  bindV2TransactionUi,
+  createV2Transaction,
+  hydrateV2TransactionContext,
+  listRecentV2Transactions,
+  renderV2RecentTransactions,
+  renderV2TransactionForm
+} from './features/v2_transactions.js';
+export {
   bindHouseholdUi,
   createHousehold,
   createHouseholdCategoryByKind,

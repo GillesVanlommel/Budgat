@@ -4,6 +4,9 @@ const appState = {
   households: [],
   householdAccounts: [],
   householdMembers: [],
+  v2CategoryKinds: [],
+  v2HouseholdCategories: [],
+  v2RecentTransactions: [],
   currentView: 'view-add',
   viewsLoaded: false
 };
@@ -50,6 +53,31 @@ export function getHouseholdMembers() {
   return appState.householdMembers;
 }
 
+export function setV2CategoryKinds(categoryKinds) {
+  appState.v2CategoryKinds = Array.isArray(categoryKinds) ? categoryKinds : [];
+}
+
+export function getV2CategoryKinds() {
+  return appState.v2CategoryKinds;
+}
+
+export function setV2HouseholdCategories(categories) {
+  appState.v2HouseholdCategories = Array.isArray(categories) ? categories : [];
+}
+
+export function getV2HouseholdCategories() {
+  return appState.v2HouseholdCategories;
+}
+
+export function setV2RecentTransactions(transactions) {
+  appState.v2RecentTransactions = Array.isArray(transactions) ? transactions : [];
+  window.__budgat_v2_recent_transactions__ = appState.v2RecentTransactions;
+}
+
+export function getV2RecentTransactions() {
+  return appState.v2RecentTransactions;
+}
+
 export function setSelectedHouseholdId(householdId) {
   if (!householdId) {
     localStorage.removeItem(SELECTED_HOUSEHOLD_STORAGE_KEY);
@@ -68,6 +96,10 @@ export function clearCurrentHousehold() {
   appState.households = [];
   appState.householdAccounts = [];
   appState.householdMembers = [];
+  appState.v2CategoryKinds = [];
+  appState.v2HouseholdCategories = [];
+  appState.v2RecentTransactions = [];
+  window.__budgat_v2_recent_transactions__ = [];
   localStorage.removeItem(SELECTED_HOUSEHOLD_STORAGE_KEY);
 }
 
