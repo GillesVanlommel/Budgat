@@ -106,6 +106,12 @@ export async function hydrateV2TransactionContext() {
   return { transactions };
 }
 
+export async function loadV2TransactionView() {
+  await hydrateV2TransactionContext();
+  renderV2TransactionForm();
+  renderV2RecentTransactions();
+}
+
 function getVisibleCategoriesForKind(kind) {
   return getV2HouseholdCategories().filter(category => {
     if (kind === 'expense') return category.flow_type === 'expense';

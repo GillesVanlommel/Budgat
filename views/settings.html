@@ -4,7 +4,7 @@
     <p class="text-sm text-slate-500 mb-4">Accounts are the source of truth for balances, transfers, savings, and reconciliation.</p>
 
     <div id="accountSettingsHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
-      Add at least one account before moving transactions to the new V2 model.
+      Add at least one account before recording transactions and checkpoints.
     </div>
 
     <form id="accountCreateForm" class="space-y-3 mb-6">
@@ -46,8 +46,8 @@
   </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 class="text-lg font-semibold mb-2 text-slate-700">V2 Account Reconciliation</h2>
-    <p class="text-sm text-slate-500 mb-4">Reconcile each account against its calculated V2 balance. This is the new account-based checkpoint flow.</p>
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">Account Reconciliation</h2>
+    <p class="text-sm text-slate-500 mb-4">Reconcile each account against its calculated household balance.</p>
 
     <div id="v2ReconciliationSetupHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
       Add at least one household account before saving reconciliation checkpoints.
@@ -83,29 +83,25 @@
 
       <button id="v2ReconciliationSubmitBtn"
         class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
-        Save V2 Checkpoint
+        Save Checkpoint
       </button>
     </form>
 
     <div id="v2ReconciliationSelectedSummary" class="mb-4"></div>
 
     <div id="v2ReconciliationEmptyHint" class="hidden text-sm text-slate-500 italic mb-3">
-      No V2 checkpoints saved for this account yet.
+      No checkpoints saved for this account yet.
     </div>
 
     <div id="v2ReconciliationList" class="space-y-3"></div>
-
-    <div class="text-xs text-slate-400 border-t border-slate-100 pt-4 mt-4">
-      Legacy checkpoints remain below until the old reconciliation flow is removed.
-    </div>
   </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 class="text-lg font-semibold mb-2 text-slate-700">V2 Categories</h2>
-    <p class="text-sm text-slate-500 mb-4">These categories use stable category kinds behind the scenes and will power the new budgeting model.</p>
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">Categories</h2>
+    <p class="text-sm text-slate-500 mb-4">Categories use stable category kinds behind the scenes and power the budget and reporting model.</p>
 
     <div id="v2CategorySetupHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
-      Create V2 categories before we switch the transaction flow to the new model.
+      Create expense and income categories so they can be used in transactions and budgets.
     </div>
 
     <form id="v2CategoryCreateForm" class="space-y-3 mb-6">
@@ -119,66 +115,11 @@
 
       <button id="createV2CategoryBtn"
         class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
-        Add V2 Category
+        Add Category
       </button>
     </form>
 
-    <div id="v2CategoryList" class="space-y-2 mb-4"></div>
-
-    <div class="text-xs text-slate-400 border-t border-slate-100 pt-4">
-      Legacy categories below are still active for the old transaction flow until the V2 transaction rewrite is done.
-    </div>
-  </div>
-
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 class="text-lg font-semibold mb-4 text-slate-700">Manage Categories</h2>
-
-    <div class="flex flex-col sm:flex-row gap-2 mb-4">
-      <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Groceries)"
-        class="flex-grow p-2 border rounded-lg">
-
-      <input type="number" id="newCategoryBudget" placeholder="Monthly Budget (€)"
-        class="w-full sm:w-32 p-2 border rounded-lg">
-    </div>
-
-    <div class="flex flex-col sm:flex-row gap-2 mb-6">
-      <select id="newCategoryType" class="flex-grow p-2 border rounded-lg">
-        <option value="expense">Expense</option>
-        <option value="income">Income</option>
-        <option value="transfer">Transfer (Savings)</option>
-      </select>
-
-      <button onclick="addCategory()"
-        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
-        Add
-      </button>
-    </div>
-
-    <div id="categoryBadgeList" class="space-y-2">
-    </div>
-  </div>
-
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mt-6">
-    <h2 class="text-lg font-semibold mb-2 text-slate-700">Balance Checkpoints</h2>
-    <p class="text-sm text-slate-500 mb-6">
-      Create a "save point" of your current balance. The system will calculate if your transactions match the difference
-      between points.
-    </p>
-
-    <div class="flex gap-2 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 items-end">
-      <div class="flex-grow">
-        <label class="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Current Balance (€)</label>
-        <input type="number" id="reconAmount" placeholder="e.g. 1250.00" step="0.01"
-          class="w-full p-3 border border-slate-200 rounded-lg text-lg font-mono text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none">
-      </div>
-      <button onclick="addReconciliation()"
-        class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-medium shadow-sm shadow-indigo-200 transition-all active:scale-95">
-        Set Checkpoint
-      </button>
-    </div>
-
-    <div id="reconciliationList" class="space-y-2">
-    </div>
+    <div id="v2CategoryList" class="space-y-2"></div>
   </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -188,7 +129,7 @@
       <div class="flex justify-between items-center">
         <div>
           <h3 class="font-medium text-slate-700">Export Data</h3>
-          <p class="text-sm text-slate-400">Download all transactions as CSV</p>
+          <p class="text-sm text-slate-400">CSV export still targets the legacy data flow and will be replaced by V2 export later.</p>
         </div>
         <button onclick="exportCSV()" class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -204,7 +145,7 @@
 
       <div>
         <h3 class="font-medium text-slate-700 mb-2">Import Data</h3>
-        <p class="text-sm text-slate-400 mb-3">Upload a CSV file (WANNEER, WAT, HOEVEEL, CATEGORIE, OPMERKING)</p>
+        <p class="text-sm text-slate-400 mb-3">CSV import is still legacy-only and should be used carefully until the V2 importer exists.</p>
 
         <div class="flex gap-2">
           <input type="file" id="csvInput" accept=".csv" class="block w-full text-sm text-slate-500
@@ -223,6 +164,65 @@
     </div>
   </div>
 
+  <details id="legacyToolsPanel" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
+      <div>
+        <h2 class="text-lg font-semibold text-slate-700">Legacy Tools</h2>
+        <p class="text-sm text-slate-500 mt-1">Old categories and old balance checkpoints are hidden by default during the V2 cutover.</p>
+      </div>
+      <span class="text-xs font-medium text-slate-500 border border-slate-200 bg-slate-50 px-2 py-1 rounded-full">advanced</span>
+    </summary>
+
+    <div class="mt-6 space-y-6">
+      <div class="rounded-xl border border-slate-200 p-5">
+        <h3 class="text-base font-semibold mb-4 text-slate-700">Legacy Categories</h3>
+
+        <div class="flex flex-col sm:flex-row gap-2 mb-4">
+          <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Groceries)"
+            class="flex-grow p-2 border rounded-lg">
+
+          <input type="number" id="newCategoryBudget" placeholder="Monthly Budget (€)"
+            class="w-full sm:w-32 p-2 border rounded-lg">
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-2 mb-6">
+          <select id="newCategoryType" class="flex-grow p-2 border rounded-lg">
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+            <option value="transfer">Transfer (Savings)</option>
+          </select>
+
+          <button onclick="addCategory()"
+            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
+            Add
+          </button>
+        </div>
+
+        <div id="categoryBadgeList" class="space-y-2"></div>
+      </div>
+
+      <div class="rounded-xl border border-slate-200 p-5">
+        <h3 class="text-base font-semibold mb-2 text-slate-700">Legacy Balance Checkpoints</h3>
+        <p class="text-sm text-slate-500 mb-6">
+          This is the old single-balance checkpoint flow. Prefer the account-based reconciliation section above.
+        </p>
+
+        <div class="flex gap-2 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 items-end">
+          <div class="flex-grow">
+            <label class="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Current Balance (€)</label>
+            <input type="number" id="reconAmount" placeholder="e.g. 1250.00" step="0.01"
+              class="w-full p-3 border border-slate-200 rounded-lg text-lg font-mono text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+          <button onclick="addReconciliation()"
+            class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-medium shadow-sm shadow-indigo-200 transition-all active:scale-95">
+            Set Checkpoint
+          </button>
+        </div>
+
+        <div id="reconciliationList" class="space-y-2"></div>
+      </div>
+    </div>
+  </details>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-4 text-slate-700">Account</h2>

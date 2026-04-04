@@ -2,10 +2,10 @@
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <div class="flex items-center justify-between gap-3 mb-4">
       <div>
-        <h2 class="text-lg font-semibold text-slate-700">V2 Transaction</h2>
-        <p class="text-sm text-slate-500">This writes to the new household/account transaction model.</p>
+        <h2 class="text-lg font-semibold text-slate-700">Transaction</h2>
+        <p class="text-sm text-slate-500">Add an expense, income, or transfer against real household accounts.</p>
       </div>
-      <span class="text-[10px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 font-medium">new model</span>
+      <span class="text-[10px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 font-medium">household model</span>
     </div>
 
     <form id="v2TransactionForm" class="space-y-3">
@@ -51,52 +51,14 @@
 
       <button id="v2TransactionSubmitBtn" type="submit"
         class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition">
-        Save V2 Transaction
+        Save Transaction
       </button>
     </form>
   </div>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 class="text-lg font-semibold mb-4 text-slate-700">Recent V2 Activity</h2>
-    <p id="v2TransactionEmptyHint" class="hidden text-sm text-slate-500 italic">No V2 transactions yet.</p>
+    <h2 class="text-lg font-semibold mb-4 text-slate-700">Recent Activity</h2>
+    <p id="v2TransactionEmptyHint" class="hidden text-sm text-slate-500 italic">No transactions yet in this household.</p>
     <ul id="v2RecentTransactionList" class="divide-y divide-slate-100"></ul>
-  </div>
-
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 id="formTitle" class="text-lg font-semibold mb-4 text-slate-700">Add Transaction</h2>
-    <div class="space-y-3">
-      
-      <input type="hidden" id="transactionId">
-      <input type="hidden" id="transactionType" value="expense">
-      
-      <input type="date" id="date" class="w-full p-2 border rounded-lg text-slate-700">
-      <input type="text" id="description" placeholder="What (Description)" class="w-full p-2 border rounded-lg">
-      
-      <div class="flex gap-2">
-        <button type="button" id="typeExpense" onclick="setTransactionType('expense')" class="flex-1 py-2 rounded-lg font-medium transition border-2 border-red-200 bg-red-50 text-red-700">Expense</button>
-        <button type="button" id="typeIncome" onclick="setTransactionType('income')" class="flex-1 py-2 rounded-lg font-medium transition border-2 border-slate-200 bg-white text-slate-400">Income</button>
-      </div>
-
-      <div id="addViewAccountHint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
-        No V2 accounts configured for this household yet. Add accounts in Settings before moving transactions to the new model.
-      </div>
-      
-      <select id="categorySelect" class="w-full p-2 border rounded-lg">
-        <option value="">Select a Category</option>
-      </select>
-      <input type="number" id="amount" placeholder="Amount (€)" class="w-full p-2 border rounded-lg">
-      <input type="text" id="remark" placeholder="Remark (Optional)" class="w-full p-2 border rounded-lg">
-      
-      <div class="flex gap-2">
-        <button id="saveBtn" onclick="saveTransaction()" class="flex-1 bg-emerald-500 text-white py-2 rounded-lg font-medium hover:bg-emerald-600 transition">Save Transaction</button>
-        
-        <button id="cancelBtn" onclick="cancelEdit()" class="hidden w-1/3 bg-slate-200 text-slate-600 py-2 rounded-lg font-medium hover:bg-slate-300 transition">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 class="text-lg font-semibold mb-4 text-slate-700">Recent Spending</h2>
-    <ul id="transactionList" class="divide-y divide-slate-100"></ul>
   </div>
 </div>
