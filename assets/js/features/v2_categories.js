@@ -1,6 +1,7 @@
 import { db } from '../core/database.js';
 import {
   getCurrentHousehold,
+  getHouseholdAccounts,
   getV2CategoryKinds,
   getV2HouseholdCategories,
   setV2CategoryKinds,
@@ -11,6 +12,7 @@ function getV2CategoryUiElements() {
   return {
     form: document.getElementById('v2CategoryCreateForm'),
     nameInput: document.getElementById('v2CategoryNameInput'),
+    accountInput: document.getElementById('v2CategoryAccountInput'),
     flowInput: document.getElementById('v2CategoryFlowInput'),
     submitBtn: document.getElementById('createV2CategoryBtn'),
     errorBox: document.getElementById('v2CategoryError'),
@@ -40,9 +42,10 @@ export async function listCategoryKinds() {
   return getV2CategoryKinds();
 }
 
-export async function listV2HouseholdCategories(householdId) {
+export async function listV2HouseholdCategories(householdId, accountId = null) {
   const { data, error } = await db.rpc('list_household_categories', {
-    p_household_id: householdId
+    p_household_id: householdId,
+    p_account_id: accountId
   });
 
   if (error) throw error;
@@ -73,26 +76,50 @@ export async function hydrateV2CategoryContext() {
 }
 
 export function renderV2Categories() {
-  const { flowInput, list, hint } = getV2CategoryUiElements();
+  const { flowInput, accountInput, list, hint } = getV2CategoryUiElements();
+  const accounts = getHouseholdAccounts().filter(account => !account.archived);
   const categories = getV2HouseholdCategories();
+  const selectedAccountId = accountInput?.value || '';
+  const fallbackAccountId = accounts[0]?.account_id || '';
+  const activeAccountId = accounts.some(account => account.account_id === selectedAccountId)
+    ? selectedAccountId
+    : fallbackAccountId;
+  const visibleCategories = activeAccountId
+    ? categories.filter(category => category.account_id === activeAccountId)
+    : [];
+
+  if (accountInput) {
+    accountInput.innerHTML = `
+      <option value="">Select account</option>
+      ${accounts.map(account => `
+        <option value="${account.account_id}">${account.name}</option>
+      `).join('')}
+    `;
+    accountInput.value = activeAccountId;
+  }
 
   if (flowInput) {
     flowInput.innerHTML = `
       <option value="expense">Expense</option>
       <option value="income">Income</option>
-      <option value="transfer">Transfer</option>
     `;
   }
 
   if (list) {
-    if (categories.length === 0) {
+    if (!activeAccountId) {
       list.innerHTML = `
         <div class="text-sm text-slate-500 italic">
-          No V2 household categories yet. Create categories from stable kinds so the new budgeting model stays consistent.
+          Add at least one account, then select it to manage categories.
+        </div>
+      `;
+    } else if (visibleCategories.length === 0) {
+      list.innerHTML = `
+        <div class="text-sm text-slate-500 italic">
+          No categories for this account yet.
         </div>
       `;
     } else {
-      list.innerHTML = categories.map(category => `
+      list.innerHTML = visibleCategories.map(category => `
         <div class="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200">
           <div>
             <div class="font-medium text-slate-800">${category.name}</div>
@@ -109,12 +136,18 @@ export function renderV2Categories() {
   }
 
   if (hint) {
-    hint.classList.toggle('hidden', categories.length > 0);
+    hint.classList.toggle('hidden', accounts.length > 0 && visibleCategories.length > 0);
   }
 }
 
 export function bindV2CategoryUi({ onCategoriesChanged }) {
-  const { form, nameInput, flowInput, submitBtn } = getV2CategoryUiElements();
+  const { form, nameInput, accountInput, flowInput, submitBtn } = getV2CategoryUiElements();
+
+  if (accountInput) {
+    accountInput.onchange = () => {
+      renderV2Categories();
+    };
+  }
 
   if (!form) return;
 
@@ -128,11 +161,17 @@ export function bindV2CategoryUi({ onCategoriesChanged }) {
       return;
     }
 
+    if (!accountInput?.value) {
+      setV2CategoryError('Select an account for this category.');
+      return;
+    }
+
     if (submitBtn) submitBtn.disabled = true;
 
     try {
       const { error } = await db.rpc('create_household_category_simple', {
         p_household_id: household.household_id,
+        p_account_id: accountInput.value,
         p_name: nameInput?.value || '',
         p_flow_type: flowInput?.value || ''
       });

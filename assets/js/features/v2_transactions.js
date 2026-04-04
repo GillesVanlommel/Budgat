@@ -112,8 +112,11 @@ export async function loadV2TransactionView() {
   renderV2RecentTransactions();
 }
 
-function getVisibleCategoriesForKind(kind) {
+function getVisibleCategoriesForKind(kind, accountId) {
+  if (!accountId) return [];
+
   return getV2HouseholdCategories().filter(category => {
+    if (category.account_id !== accountId) return false;
     if (kind === 'expense') return category.flow_type === 'expense';
     if (kind === 'income') return category.flow_type === 'income';
     return false;
@@ -134,10 +137,10 @@ export function renderV2TransactionForm() {
 
   const accounts = getHouseholdAccounts().filter(account => !account.archived);
   const kind = kindInput?.value || 'expense';
-  const categories = getVisibleCategoriesForKind(kind);
   const selectedSourceId = accountInput?.value || '';
   const selectedDestinationId = destinationAccountInput?.value || '';
   const selectedCategoryId = categoryInput?.value || '';
+  const fallbackSourceId = accounts[0]?.account_id || '';
 
   if (dateInput && !dateInput.value) {
     dateInput.value = getTodayString();
@@ -150,11 +153,15 @@ export function renderV2TransactionForm() {
         <option value="${account.account_id}">${account.name}</option>
       `).join('')}
     `;
-    accountInput.value = accounts.some(account => account.account_id === selectedSourceId) ? selectedSourceId : '';
+    accountInput.value = accounts.some(account => account.account_id === selectedSourceId)
+      ? selectedSourceId
+      : fallbackSourceId;
   }
 
+  const currentSourceId = accountInput?.value || '';
+  const categories = getVisibleCategoriesForKind(kind, currentSourceId);
+
   if (destinationAccountInput) {
-    const currentSourceId = accountInput?.value || '';
     const destinationAccounts = accounts.filter(account => account.account_id !== currentSourceId);
     destinationAccountInput.innerHTML = `
       <option value="">Select destination account</option>
@@ -168,8 +175,9 @@ export function renderV2TransactionForm() {
   }
 
   if (categoryInput) {
+    const categoryPlaceholder = currentSourceId ? 'Select category' : 'Select source account first';
     categoryInput.innerHTML = `
-      <option value="">Select category</option>
+      <option value="">${categoryPlaceholder}</option>
       ${categories.map(category => `
         <option value="${category.category_id}">
           ${category.name} (${category.category_kind_name})
@@ -177,6 +185,7 @@ export function renderV2TransactionForm() {
       `).join('')}
     `;
     categoryInput.value = categories.some(category => category.category_id === selectedCategoryId) ? selectedCategoryId : '';
+    categoryInput.disabled = kind === 'transfer' || !currentSourceId;
   }
 
   if (destinationWrapper) {
@@ -189,7 +198,7 @@ export function renderV2TransactionForm() {
 
   if (setupHint) {
     const missingAccounts = accounts.length === 0;
-    const missingCategories = kind !== 'transfer' && categories.length === 0;
+    const missingCategories = kind !== 'transfer' && !!currentSourceId && categories.length === 0;
     setupHint.classList.toggle('hidden', !(missingAccounts || missingCategories));
   }
 }
