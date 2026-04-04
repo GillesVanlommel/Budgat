@@ -19,6 +19,12 @@ export {
   renderV2Categories
 } from './features/v2_categories.js';
 export {
+  bindV2HistoryUi,
+  listV2HistoryTransactions,
+  loadV2History,
+  renderV2History
+} from './features/v2_history.js';
+export {
   bindV2TransactionUi,
   createV2Transaction,
   hydrateV2TransactionContext,
