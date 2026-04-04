@@ -24,6 +24,7 @@ These items are intentionally deferred so phase 1 stays focused on making the co
 - Rules-based transaction suggestions
 - Multi-currency support
 - Notifications and reminders
+- Statement-style reconciliation based on cleared transactions and imported bank statements
 
 ## Important Product Notes
 
