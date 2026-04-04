@@ -11,7 +11,7 @@ function getV2CategoryUiElements() {
   return {
     form: document.getElementById('v2CategoryCreateForm'),
     nameInput: document.getElementById('v2CategoryNameInput'),
-    kindInput: document.getElementById('v2CategoryKindInput'),
+    flowInput: document.getElementById('v2CategoryFlowInput'),
     submitBtn: document.getElementById('createV2CategoryBtn'),
     errorBox: document.getElementById('v2CategoryError'),
     list: document.getElementById('v2CategoryList'),
@@ -73,16 +73,15 @@ export async function hydrateV2CategoryContext() {
 }
 
 export function renderV2Categories() {
-  const { kindInput, list, hint } = getV2CategoryUiElements();
-  const categoryKinds = getV2CategoryKinds();
+  const { flowInput, list, hint } = getV2CategoryUiElements();
   const categories = getV2HouseholdCategories();
 
-  if (kindInput) {
-    kindInput.innerHTML = categoryKinds.map(kind => `
-      <option value="${kind.key}">
-        ${kind.display_name} (${kind.flow_type})
-      </option>
-    `).join('');
+  if (flowInput) {
+    flowInput.innerHTML = `
+      <option value="expense">Expense</option>
+      <option value="income">Income</option>
+      <option value="transfer">Transfer</option>
+    `;
   }
 
   if (list) {
@@ -98,11 +97,11 @@ export function renderV2Categories() {
           <div>
             <div class="font-medium text-slate-800">${category.name}</div>
             <div class="text-xs text-slate-500">
-              ${category.category_kind_name} · ${category.flow_type} · ${category.budgetable ? 'Budgetable' : 'Not budgeted'}
+              ${category.flow_type} · ${category.budgetable ? 'Budgetable' : 'Not budgeted'}
             </div>
           </div>
           <div class="text-right">
-            <div class="text-xs text-slate-400">${category.category_kind_key}</div>
+            <div class="text-xs text-slate-400">${category.category_kind_name}</div>
           </div>
         </div>
       `).join('');
@@ -115,7 +114,7 @@ export function renderV2Categories() {
 }
 
 export function bindV2CategoryUi({ onCategoriesChanged }) {
-  const { form, nameInput, kindInput, submitBtn } = getV2CategoryUiElements();
+  const { form, nameInput, flowInput, submitBtn } = getV2CategoryUiElements();
 
   if (!form) return;
 
@@ -132,15 +131,16 @@ export function bindV2CategoryUi({ onCategoriesChanged }) {
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      const { error } = await db.rpc('create_household_category_by_kind', {
+      const { error } = await db.rpc('create_household_category_simple', {
         p_household_id: household.household_id,
         p_name: nameInput?.value || '',
-        p_category_kind_key: kindInput?.value || ''
+        p_flow_type: flowInput?.value || ''
       });
 
       if (error) throw error;
 
       if (nameInput) nameInput.value = '';
+      if (flowInput) flowInput.value = 'expense';
 
       await hydrateV2CategoryContext();
       renderV2Categories();

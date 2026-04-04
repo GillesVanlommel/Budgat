@@ -1,7 +1,6 @@
 import { markViewsLoaded } from './app_state.js';
 import { handleAuth, checkUser, setupLogoutListener } from './auth.js';
 import { loadViews } from './loader.js';
-import { addCategory, deleteCategory, editCategory, loadCategories } from '../features/categories.js';
 import { bindAccountsUi, createHouseholdAccount, hydrateAccountContext, renderAccountsSetup } from '../features/accounts.js';
 import { bindV2BudgetUi, loadV2Budget, renderV2Budget } from '../features/v2_budget.js';
 import { bindV2GraphsUi, loadV2Graphs } from '../features/v2_graphs.js';
@@ -17,18 +16,13 @@ import {
   listHouseholds,
   renderHouseholdShell
 } from '../features/households.js';
-import { addReconciliation, deleteReconciliation, loadReconciliationList } from '../features/reconciliation.js';
-import { exportCSV, importCSV } from '../utils/csv_utils.js';
+import { exportCSV, importCSV } from '../utils/v2_csv_utils.js';
 import { initNavigation } from '../ui.js';
 
 const globalActions = {
-  addCategory,
-  editCategory,
-  deleteCategory,
   createHouseholdAccount,
   createHousehold,
   createHouseholdCategoryByKind,
-  loadCategories,
   loadV2Budget,
   loadV2Graphs,
   loadV2TransactionView,
@@ -41,31 +35,13 @@ const globalActions = {
   renderV2Reconciliation,
   renderV2RecentTransactions,
   exportCSV,
-  importCSV,
-  addReconciliation,
-  deleteReconciliation,
-  loadReconciliationList
+  importCSV
 };
 
 function registerGlobalActions() {
   Object.entries(globalActions).forEach(([name, handler]) => {
     window[name] = handler;
   });
-}
-
-function bindLegacyToolsUi() {
-  const legacyToolsPanel = document.getElementById('legacyToolsPanel');
-
-  if (!legacyToolsPanel) return;
-
-  legacyToolsPanel.ontoggle = async () => {
-    if (!legacyToolsPanel.open) return;
-
-    await Promise.all([
-      loadCategories(),
-      loadReconciliationList()
-    ]);
-  };
 }
 
 function setAppMode(mode) {
@@ -173,7 +149,6 @@ export async function initApp() {
   bindV2BudgetUi();
   bindV2GraphsUi();
   bindV2ReconciliationUi();
-  bindLegacyToolsUi();
 
   const user = await checkUser();
   if (user) {

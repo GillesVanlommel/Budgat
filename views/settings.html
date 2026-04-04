@@ -1,5 +1,34 @@
 <div class="space-y-6">
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+    <h2 class="text-lg font-semibold mb-2 text-slate-700">Household Invites</h2>
+    <p class="text-sm text-slate-500 mb-4">Create invite codes so another user can join this household.</p>
+
+    <div id="householdInviteHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
+      Only owner/admin members can manage invites.
+    </div>
+
+    <form id="householdInviteForm" class="space-y-3 mb-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <select id="inviteRoleInput" class="w-full p-2 border rounded-lg">
+          <option value="member">Member</option>
+          <option value="admin">Admin</option>
+        </select>
+        <input type="number" id="inviteExpiryDaysInput" value="14" min="1" max="90" class="w-full p-2 border rounded-lg" placeholder="Expires in days">
+      </div>
+
+      <div id="householdInviteError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+      <div id="householdInviteSuccess" class="hidden text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg p-3"></div>
+
+      <button id="createInviteBtn" type="submit"
+        class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
+        Create Invite Code
+      </button>
+    </form>
+
+    <div id="householdInviteList" class="space-y-2"></div>
+  </div>
+
+  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-2 text-slate-700">Household Accounts</h2>
     <p class="text-sm text-slate-500 mb-4">Accounts are the source of truth for balances, transfers, savings, and reconciliation.</p>
 
@@ -98,7 +127,7 @@
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-2 text-slate-700">Categories</h2>
-    <p class="text-sm text-slate-500 mb-4">Categories use stable category kinds behind the scenes and power the budget and reporting model.</p>
+    <p class="text-sm text-slate-500 mb-4">Create a category name and choose if it is expense or income. Transfers are handled by account-to-account transactions.</p>
 
     <div id="v2CategorySetupHint" class="hidden mb-4 p-3 rounded-lg border border-amber-200 bg-amber-50 text-sm text-amber-800">
       Create expense and income categories so they can be used in transactions and budgets.
@@ -107,8 +136,10 @@
     <form id="v2CategoryCreateForm" class="space-y-3 mb-6">
       <input type="text" id="v2CategoryNameInput" placeholder="Category Name" class="w-full p-2 border rounded-lg">
 
-      <select id="v2CategoryKindInput" class="w-full p-2 border rounded-lg">
-        <option value="">Select a category kind</option>
+      <select id="v2CategoryFlowInput" class="w-full p-2 border rounded-lg">
+        <option value="expense">Expense</option>
+        <option value="income">Income</option>
+        <option value="transfer">Transfer</option>
       </select>
 
       <div id="v2CategoryError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
@@ -129,7 +160,7 @@
       <div class="flex justify-between items-center">
         <div>
           <h3 class="font-medium text-slate-700">Export Data</h3>
-          <p class="text-sm text-slate-400">CSV export still targets the legacy data flow and will be replaced by V2 export later.</p>
+          <p class="text-sm text-slate-400">Download household transactions from the V2 model as CSV.</p>
         </div>
         <button onclick="exportCSV()" class="text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -145,7 +176,7 @@
 
       <div>
         <h3 class="font-medium text-slate-700 mb-2">Import Data</h3>
-        <p class="text-sm text-slate-400 mb-3">CSV import is still legacy-only and should be used carefully until the V2 importer exists.</p>
+        <p class="text-sm text-slate-400 mb-3">Import V2 CSV rows (date, kind, amount, description, source account, destination account, category, notes, cleared).</p>
 
         <div class="flex gap-2">
           <input type="file" id="csvInput" accept=".csv" class="block w-full text-sm text-slate-500
@@ -163,66 +194,6 @@
       </div>
     </div>
   </div>
-
-  <details id="legacyToolsPanel" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <summary class="cursor-pointer list-none flex items-center justify-between gap-3">
-      <div>
-        <h2 class="text-lg font-semibold text-slate-700">Legacy Tools</h2>
-        <p class="text-sm text-slate-500 mt-1">Old categories and old balance checkpoints are hidden by default during the V2 cutover.</p>
-      </div>
-      <span class="text-xs font-medium text-slate-500 border border-slate-200 bg-slate-50 px-2 py-1 rounded-full">advanced</span>
-    </summary>
-
-    <div class="mt-6 space-y-6">
-      <div class="rounded-xl border border-slate-200 p-5">
-        <h3 class="text-base font-semibold mb-4 text-slate-700">Legacy Categories</h3>
-
-        <div class="flex flex-col sm:flex-row gap-2 mb-4">
-          <input type="text" id="newCategoryName" placeholder="Category Name (e.g. Groceries)"
-            class="flex-grow p-2 border rounded-lg">
-
-          <input type="number" id="newCategoryBudget" placeholder="Monthly Budget (€)"
-            class="w-full sm:w-32 p-2 border rounded-lg">
-        </div>
-
-        <div class="flex flex-col sm:flex-row gap-2 mb-6">
-          <select id="newCategoryType" class="flex-grow p-2 border rounded-lg">
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-            <option value="transfer">Transfer (Savings)</option>
-          </select>
-
-          <button onclick="addCategory()"
-            class="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 font-medium whitespace-nowrap">
-            Add
-          </button>
-        </div>
-
-        <div id="categoryBadgeList" class="space-y-2"></div>
-      </div>
-
-      <div class="rounded-xl border border-slate-200 p-5">
-        <h3 class="text-base font-semibold mb-2 text-slate-700">Legacy Balance Checkpoints</h3>
-        <p class="text-sm text-slate-500 mb-6">
-          This is the old single-balance checkpoint flow. Prefer the account-based reconciliation section above.
-        </p>
-
-        <div class="flex gap-2 mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100 items-end">
-          <div class="flex-grow">
-            <label class="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Current Balance (€)</label>
-            <input type="number" id="reconAmount" placeholder="e.g. 1250.00" step="0.01"
-              class="w-full p-3 border border-slate-200 rounded-lg text-lg font-mono text-slate-700 focus:ring-2 focus:ring-indigo-500 outline-none">
-          </div>
-          <button onclick="addReconciliation()"
-            class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-medium shadow-sm shadow-indigo-200 transition-all active:scale-95">
-            Set Checkpoint
-          </button>
-        </div>
-
-        <div id="reconciliationList" class="space-y-2"></div>
-      </div>
-    </div>
-  </details>
 
   <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
     <h2 class="text-lg font-semibold mb-4 text-slate-700">Account</h2>
