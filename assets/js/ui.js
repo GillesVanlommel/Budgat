@@ -7,7 +7,10 @@ const VIEW_REFRESHERS = {
     if (window.loadV2History) window.loadV2History();
     if (window.loadAllTransactions) window.loadAllTransactions();
   },
-  'view-budget': () => window.loadBudget && window.loadBudget(),
+  'view-budget': () => {
+    if (window.loadV2Budget) window.loadV2Budget();
+    if (window.loadBudget) window.loadBudget();
+  },
   'view-graphs': () => window.loadGraphs && window.loadGraphs(),
   'view-settings': () => window.loadReconciliationList && window.loadReconciliationList()
 };
