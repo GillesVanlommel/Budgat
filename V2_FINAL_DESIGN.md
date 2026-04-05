@@ -29,15 +29,14 @@ Status as of `2026-04-04`.
 - The primary app navigation is now fully V2.
 - A V1 schema removal script has been prepared: `supabase/sql/009_remove_v1_schema.sql`.
 - Account visibility + simplified category flow have been implemented in code, with migration prepared in `supabase/sql/010_account_visibility_and_category_simplification.sql`.
+- Build household invitations or join flows so another user can join an existing household from inside the app.
 
 ### Still to do (ranked: low -> high importance)
 
 1. Add first-run defaults for suggested accounts and starter categories to reduce setup friction.
-2. Build household invitations or join flows so another user can join an existing household from inside the app.
 3. Do the explicit code cleanup pass so the codebase is easier to extend before bigger product iterations.
 4. Add automated tests around the new SQL RPCs and the highest-risk V2 frontend flows.
-5. Run `supabase/sql/010_account_visibility_and_category_simplification.sql` in Supabase to activate account visibility filtering and the simplified category-create RPC.
-6. Run `supabase/sql/009_remove_v1_schema.sql` in Supabase to drop V1 tables from the database.
+
 
 ## 1. Product Definition
 

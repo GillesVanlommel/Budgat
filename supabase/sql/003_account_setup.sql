@@ -98,8 +98,8 @@ begin
     raise exception 'Authentication required';
   end if;
 
-  if not public.is_household_admin(p_household_id) then
-    raise exception 'Only household admins can create accounts';
+  if not public.is_household_member(p_household_id) then
+    raise exception 'Only household members can create accounts';
   end if;
 
   v_account_name := nullif(btrim(p_name), '');

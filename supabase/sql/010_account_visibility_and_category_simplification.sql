@@ -75,10 +75,6 @@ as $$
   left join public.household_members hm on hm.id = a.owner_member_id
   where a.household_id = p_household_id
     and public.is_household_member(p_household_id)
-    and (
-      a.owner_member_id is null
-      or a.owner_member_id = public.current_household_member_id(p_household_id)
-    )
   order by a.archived asc, lower(a.name) asc, a.created_at asc;
 $$;
 

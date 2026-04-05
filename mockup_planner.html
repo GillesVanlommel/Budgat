@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budgat Mockup - Budget Planner</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Roboto+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f3f4f0;--paper:#fffef9;--line:#dbdccf;--ink:#252d23;--muted:#687466;--blue:#2f6cf0;--green:#258a4d;--red:#b34d35}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Manrope,sans-serif;color:var(--ink)}
+    .app{max-width:1240px;margin:0 auto;padding:16px;display:grid;gap:12px}
+    .top{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:10px}
+    .nav{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted);font-weight:700}.chip.active{border-color:#baceff;background:#e9f1ff;color:var(--blue)}
+    .scope{display:flex;gap:6px;flex-wrap:wrap}.scope span{padding:7px 10px;border-radius:999px;border:1px solid var(--line);font-size:11px;color:var(--muted)}
+    .layout{display:grid;grid-template-columns:1.25fr .75fr;gap:12px}
+    .card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px}
+    h2{margin:0 0 10px;font-size:15px}
+    table{width:100%;border-collapse:collapse;font-size:12px}
+    th,td{border-bottom:1px solid #eceee3;padding:8px 6px;text-align:left}th{color:var(--muted);font-size:11px;text-transform:uppercase}
+    .mono{font-family:"Roboto Mono",monospace}.ok{color:var(--green);font-weight:700}.bad{color:var(--red);font-weight:700}
+    .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}.s{border:1px solid var(--line);border-radius:10px;padding:8px}.s small{display:block;color:var(--muted);font-size:10px;text-transform:uppercase}.s strong{font-family:"Roboto Mono",monospace;font-size:15px}
+    .form{display:grid;gap:8px}.f{border:1px solid var(--line);border-radius:10px;padding:9px;font-size:12px;color:var(--muted)}
+    .warn{font-size:12px;color:#8e5c00;background:#fff4da;border:1px solid #f1ddb0;border-radius:9px;padding:8px;font-weight:700}
+    .btn{border:0;background:var(--blue);color:#fff;padding:10px 12px;border-radius:10px;font-weight:700}
+    @media(max-width:980px){.layout{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}}
+    @media(max-width:560px){.summary{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="nav">
+        <span class="chip active">Dashboard</span>
+        <span class="chip">History</span>
+        <span class="chip">Graphs</span>
+        <span class="chip">Settings</span>
+      </div>
+      <div class="scope">
+        <span>Household: Van Lommel Home</span>
+        <span>Month: April 2026</span>
+        <span>Account: All</span>
+      </div>
+    </header>
+
+    <section class="layout">
+      <article class="card">
+        <h2>Budget vs Actual by Category</h2>
+        <div class="summary">
+          <div class="s"><small>Planned</small><strong>€4,450</strong></div>
+          <div class="s"><small>Actual</small><strong>€3,470</strong></div>
+          <div class="s"><small>Remaining</small><strong class="ok">€980</strong></div>
+        </div>
+        <table>
+          <thead><tr><th>Category</th><th class="mono">Planned</th><th class="mono">Actual</th><th class="mono">Delta</th></tr></thead>
+          <tbody>
+            <tr><td>Housing</td><td class="mono">€1,900</td><td class="mono">€1,860</td><td class="mono ok">+€40</td></tr>
+            <tr><td>Living</td><td class="mono">€1,200</td><td class="mono">€1,070</td><td class="mono ok">+€130</td></tr>
+            <tr><td>Lifestyle</td><td class="mono">€350</td><td class="mono">€540</td><td class="mono bad">-€190</td></tr>
+            <tr><td>Transport</td><td class="mono">€300</td><td class="mono">€250</td><td class="mono ok">+€50</td></tr>
+            <tr><td>Misc</td><td class="mono">€700</td><td class="mono">€-</td><td class="mono ok">+€700</td></tr>
+          </tbody>
+        </table>
+      </article>
+
+      <aside class="card">
+        <h2>Capture Transaction</h2>
+        <div class="form">
+          <div class="f">Type: Expense / Income / Transfer</div>
+          <div class="f">Account (from top scope by default)</div>
+          <div class="f">Amount + Date + Description</div>
+          <div class="f">Category (or destination for transfer)</div>
+          <div class="warn">Required field check runs before Save so you never miss one.</div>
+          <button class="btn">Save</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

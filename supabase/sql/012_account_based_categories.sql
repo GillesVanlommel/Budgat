@@ -277,10 +277,12 @@ set search_path = public
 as $$
 declare
   v_user_id uuid;
+  v_current_member_id uuid;
   v_category_name text;
   v_kind_key text;
   v_category_kind_id uuid;
   v_account_household_id uuid;
+  v_account_owner_member_id uuid;
   v_category public.household_categories;
 begin
   v_user_id := auth.uid();
@@ -289,8 +291,19 @@ begin
     raise exception 'Authentication required';
   end if;
 
-  if not public.is_household_admin(p_household_id) then
-    raise exception 'Only household admins can create categories';
+  if not public.is_household_member(p_household_id) then
+    raise exception 'Only household members can create categories';
+  end if;
+
+  select hm.id
+    into v_current_member_id
+  from public.household_members hm
+  where hm.household_id = p_household_id
+    and hm.user_id = v_user_id
+  limit 1;
+
+  if v_current_member_id is null then
+    raise exception 'Only household members can create categories';
   end if;
 
   v_category_name := nullif(btrim(p_name), '');
@@ -312,8 +325,11 @@ begin
     raise exception 'Unknown category kind key: %', v_kind_key;
   end if;
 
-  select a.household_id
-    into v_account_household_id
+  select
+    a.household_id,
+    a.owner_member_id
+    into v_account_household_id,
+      v_account_owner_member_id
   from public.accounts a
   where a.id = p_account_id;
 
@@ -323,6 +339,10 @@ begin
 
   if v_account_household_id <> p_household_id then
     raise exception 'Account must belong to the same household';
+  end if;
+
+  if v_account_owner_member_id is distinct from v_current_member_id then
+    raise exception 'You can only create categories for your own accounts';
   end if;
 
   insert into public.household_categories (

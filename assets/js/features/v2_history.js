@@ -56,6 +56,45 @@ export async function listV2HistoryTransactions({
   return transactions;
 }
 
+export async function updateV2HistoryTransaction({
+  householdId,
+  transactionId,
+  transactionDate,
+  description,
+  notes = '',
+  amount,
+  isCleared = false
+}) {
+  const payload = {
+    transaction_date: transactionDate,
+    description,
+    notes: notes || null,
+    amount,
+    is_cleared: isCleared
+  };
+
+  const { data, error } = await db
+    .from('household_transactions')
+    .update(payload)
+    .eq('id', transactionId)
+    .eq('household_id', householdId)
+    .select('id')
+    .single();
+
+  if (error) throw error;
+  return data || null;
+}
+
+export async function deleteV2HistoryTransaction({ householdId, transactionId }) {
+  const { error } = await db
+    .from('household_transactions')
+    .delete()
+    .eq('id', transactionId)
+    .eq('household_id', householdId);
+
+  if (error) throw error;
+}
+
 function renderHistoryFilters() {
   const { monthInput, accountInput, categoryInput } = getV2HistoryUiElements();
   const accounts = getHouseholdAccounts().filter(account => !account.archived);
@@ -130,7 +169,7 @@ export function renderV2History() {
       : `${transaction.account_name} · ${transaction.category_name || 'No category'}`;
 
     return `
-      <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
+      <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm" data-history-transaction-id="${transaction.transaction_id}">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="flex items-center gap-2 mb-1">
@@ -143,6 +182,10 @@ export function renderV2History() {
           </div>
           <div class="text-right shrink-0">
             <div class="font-mono font-bold text-slate-800">€${Number(transaction.amount || 0).toFixed(2)}</div>
+            <div class="mt-2 flex items-center justify-end gap-2">
+              <button type="button" class="text-xs px-2 py-1 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-50" data-history-transaction-action="edit">Edit</button>
+              <button type="button" class="text-xs px-2 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50" data-history-transaction-action="delete">Delete</button>
+            </div>
           </div>
         </div>
       </div>
@@ -182,12 +225,104 @@ export async function loadV2History() {
   renderV2History();
 }
 
-export function bindV2HistoryUi() {
-  const { searchInput, monthInput, kindInput, accountInput, categoryInput } = getV2HistoryUiElements();
+export function bindV2HistoryUi({ onTransactionsChanged } = {}) {
+  const {
+    searchInput,
+    monthInput,
+    kindInput,
+    accountInput,
+    categoryInput,
+    list
+  } = getV2HistoryUiElements();
 
   if (searchInput) searchInput.oninput = () => { loadV2History(); };
   if (monthInput) monthInput.onchange = () => { loadV2History(); };
   if (kindInput) kindInput.onchange = () => { loadV2History(); };
   if (accountInput) accountInput.onchange = () => { loadV2History(); };
   if (categoryInput) categoryInput.onchange = () => { loadV2History(); };
+
+  if (list) {
+    list.onclick = async (event) => {
+      const actionButton = event.target.closest('[data-history-transaction-action]');
+      if (!actionButton) return;
+
+      const row = actionButton.closest('[data-history-transaction-id]');
+      const transactionId = row?.dataset.historyTransactionId;
+      const action = actionButton.dataset.historyTransactionAction;
+      const household = getCurrentHousehold();
+
+      if (!transactionId || !household?.household_id) return;
+
+      const transaction = getV2HistoryTransactions().find(tx => tx.transaction_id === transactionId);
+      if (!transaction) return;
+
+      actionButton.disabled = true;
+
+      try {
+        if (action === 'delete') {
+          const confirmed = window.confirm('Delete this transaction?');
+          if (!confirmed) return;
+
+          await deleteV2HistoryTransaction({
+            householdId: household.household_id,
+            transactionId
+          });
+        }
+
+        if (action === 'edit') {
+          const nextDateInput = window.prompt('Transaction date (YYYY-MM-DD)', transaction.transaction_date || '');
+          if (nextDateInput === null) return;
+          const nextDescriptionInput = window.prompt('Description', transaction.description || '');
+          if (nextDescriptionInput === null) return;
+          const nextAmountRawInput = window.prompt('Amount', String(transaction.amount || ''));
+          if (nextAmountRawInput === null) return;
+          const nextNotesInput = window.prompt('Notes (optional)', transaction.notes || '');
+          if (nextNotesInput === null) return;
+          const nextClearedRawInput = window.prompt('Cleared? (yes/no)', transaction.is_cleared ? 'yes' : 'no');
+          if (nextClearedRawInput === null) return;
+
+          const nextDate = nextDateInput;
+          const nextDescription = nextDescriptionInput;
+          const nextAmountRaw = nextAmountRawInput;
+          const nextNotes = nextNotesInput;
+          const nextClearedRaw = nextClearedRawInput;
+          const nextAmount = Number(nextAmountRaw);
+          const normalizedCleared = nextClearedRaw.trim().toLowerCase();
+          const nextCleared = normalizedCleared === 'yes' || normalizedCleared === 'y' || normalizedCleared === 'true' || normalizedCleared === '1';
+
+          if (!nextDate || Number.isNaN(new Date(nextDate).getTime())) {
+            throw new Error('Valid transaction date is required (YYYY-MM-DD).');
+          }
+
+          if (!nextDescription.trim()) {
+            throw new Error('Description is required.');
+          }
+
+          if (!Number.isFinite(nextAmount) || nextAmount <= 0) {
+            throw new Error('Amount must be greater than zero.');
+          }
+
+          await updateV2HistoryTransaction({
+            householdId: household.household_id,
+            transactionId,
+            transactionDate: nextDate,
+            description: nextDescription.trim(),
+            notes: nextNotes.trim(),
+            amount: nextAmount,
+            isCleared: nextCleared
+          });
+        }
+
+        await loadV2History();
+
+        if (onTransactionsChanged) {
+          await onTransactionsChanged();
+        }
+      } catch (error) {
+        window.alert(error.message || 'Failed to update transaction.');
+      } finally {
+        actionButton.disabled = false;
+      }
+    };
+  }
 }

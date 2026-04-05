@@ -1,4 +1,4 @@
-import { getCurrentHousehold } from '../core/app_state.js';
+import { getCurrentHousehold, getHouseholdAccounts } from '../core/app_state.js';
 import { db } from '../core/database.js';
 
 let cachedBudgetLines = [];
@@ -6,6 +6,7 @@ let cachedBudgetLines = [];
 function getV2BudgetUiElements() {
   return {
     monthInput: document.getElementById('v2BudgetMonth'),
+    accountInput: document.getElementById('v2BudgetAccount'),
     list: document.getElementById('v2BudgetList'),
     emptyHint: document.getElementById('v2BudgetEmptyHint'),
     setupHint: document.getElementById('v2BudgetSetupHint'),
@@ -42,10 +43,11 @@ function formatCurrency(value) {
   return `EUR ${Number(value || 0).toFixed(2)}`;
 }
 
-export async function listV2BudgetMonthLines(householdId, month) {
+export async function listV2BudgetMonthLines(householdId, month, accountId) {
   const { data, error } = await db.rpc('list_budget_month_lines', {
     p_household_id: householdId,
-    p_month: normalizeMonthInput(month)
+    p_month: normalizeMonthInput(month),
+    p_account_id: accountId
   });
 
   if (error) throw error;
@@ -67,10 +69,26 @@ export async function setV2BudgetLine({ householdId, month, categoryId, plannedA
 
 export async function loadV2Budget() {
   const household = getCurrentHousehold();
-  const { monthInput } = getV2BudgetUiElements();
+  const { monthInput, accountInput } = getV2BudgetUiElements();
+  const accounts = getHouseholdAccounts().filter(account => !account.archived);
+  const selectedAccountId = accountInput?.value || '';
+  const fallbackAccountId = accounts[0]?.account_id || '';
+  const activeAccountId = accounts.some(account => account.account_id === selectedAccountId)
+    ? selectedAccountId
+    : fallbackAccountId;
 
   if (monthInput && !monthInput.value) {
     monthInput.value = getTodayMonthString();
+  }
+
+  if (accountInput) {
+    accountInput.innerHTML = `
+      <option value="">Select account</option>
+      ${accounts.map(account => `
+        <option value="${account.account_id}">${account.name}</option>
+      `).join('')}
+    `;
+    accountInput.value = activeAccountId;
   }
 
   if (!household?.household_id) {
@@ -79,8 +97,14 @@ export async function loadV2Budget() {
     return [];
   }
 
+  if (!activeAccountId) {
+    cachedBudgetLines = [];
+    renderV2Budget();
+    return [];
+  }
+
   const month = monthInput?.value || getTodayMonthString();
-  const lines = await listV2BudgetMonthLines(household.household_id, month);
+  const lines = await listV2BudgetMonthLines(household.household_id, month, activeAccountId);
   renderV2Budget();
   return lines;
 }
@@ -161,10 +185,17 @@ export function renderV2Budget() {
 }
 
 export function bindV2BudgetUi() {
-  const { monthInput, list } = getV2BudgetUiElements();
+  const { monthInput, accountInput, list } = getV2BudgetUiElements();
 
   if (monthInput) {
     monthInput.onchange = async () => {
+      setV2BudgetError('');
+      await loadV2Budget();
+    };
+  }
+
+  if (accountInput) {
+    accountInput.onchange = async () => {
       setV2BudgetError('');
       await loadV2Budget();
     };
