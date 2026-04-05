@@ -54,6 +54,7 @@ begin
     select
       hm.id as member_id,
       coalesce(
+        nullif(btrim(hm.display_name), ''),
         nullif(btrim(au.raw_user_meta_data ->> 'full_name'), ''),
         nullif(btrim(au.raw_user_meta_data ->> 'name'), ''),
         nullif(
@@ -68,11 +69,11 @@ begin
         ),
         nullif(btrim(au.raw_user_meta_data ->> 'preferred_username'), ''),
         nullif(btrim(split_part(au.email, '@', 1)), ''),
-        nullif(btrim(hm.display_name), ''),
         'Member'
       ) as base_name,
       row_number() over (
         partition by coalesce(
+          nullif(btrim(hm.display_name), ''),
           nullif(btrim(au.raw_user_meta_data ->> 'full_name'), ''),
           nullif(btrim(au.raw_user_meta_data ->> 'name'), ''),
           nullif(
@@ -87,13 +88,13 @@ begin
           ),
           nullif(btrim(au.raw_user_meta_data ->> 'preferred_username'), ''),
           nullif(btrim(split_part(au.email, '@', 1)), ''),
-          nullif(btrim(hm.display_name), ''),
           'Member'
         )
         order by hm.joined_at asc, hm.id asc
       ) as name_seq,
       count(*) over (
         partition by coalesce(
+          nullif(btrim(hm.display_name), ''),
           nullif(btrim(au.raw_user_meta_data ->> 'full_name'), ''),
           nullif(btrim(au.raw_user_meta_data ->> 'name'), ''),
           nullif(
@@ -108,7 +109,6 @@ begin
           ),
           nullif(btrim(au.raw_user_meta_data ->> 'preferred_username'), ''),
           nullif(btrim(split_part(au.email, '@', 1)), ''),
-          nullif(btrim(hm.display_name), ''),
           'Member'
         )
       ) as name_count

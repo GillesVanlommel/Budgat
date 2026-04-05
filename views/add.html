@@ -1,64 +1,106 @@
-<div class="space-y-6">
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <div class="flex items-center justify-between gap-3 mb-4">
+<div class="space-y-4">
+  <div class="planner-card p-4">
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 mb-4">
       <div>
-        <h2 class="text-lg font-semibold text-slate-700">Transaction</h2>
-        <p class="text-sm text-slate-500">Add an expense, income, or transfer against real household accounts.</p>
+        <h2 class="text-xl font-extrabold text-slate-800">Dashboard</h2>
+        <p class="text-sm text-slate-500">Recent snapshot (latest entries) with guided transaction capture.</p>
       </div>
-      <span class="text-[10px] px-2 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 font-medium">household model</span>
+      <div class="flex flex-wrap gap-2">
+        <span class="planner-chip">View: Dashboard</span>
+        <span class="planner-chip">Model: Household V2</span>
+      </div>
     </div>
 
-    <form id="v2TransactionForm" class="space-y-3">
-      <input type="date" id="v2TransactionDate" class="w-full p-2 border rounded-lg text-slate-700">
-
-      <select id="v2TransactionKind" class="w-full p-2 border rounded-lg">
-        <option value="expense">Expense</option>
-        <option value="income">Income</option>
-        <option value="transfer">Transfer</option>
-      </select>
-
-      <input type="text" id="v2TransactionDescription" placeholder="Description / Payee" class="w-full p-2 border rounded-lg">
-
-      <div id="v2TransactionSetupHint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
-        This household needs accounts, and expense/income transactions also need V2 categories before you can save transactions in the new model.
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+      <div class="bg-white border border-slate-200 rounded-lg p-3">
+        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Income</p>
+        <p id="dashboardMetricIncome" class="mono text-sm font-bold text-slate-800 mt-1">EUR --</p>
       </div>
-
-      <select id="v2TransactionAccount" class="w-full p-2 border rounded-lg">
-        <option value="">Select source account</option>
-      </select>
-
-      <div id="v2DestinationAccountWrap" class="hidden">
-        <select id="v2TransactionDestinationAccount" class="w-full p-2 border rounded-lg">
-          <option value="">Select destination account</option>
-        </select>
+      <div class="bg-white border border-slate-200 rounded-lg p-3">
+        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Expenses</p>
+        <p id="dashboardMetricExpense" class="mono text-sm font-bold text-slate-800 mt-1">EUR --</p>
       </div>
-
-      <div id="v2CategoryWrap">
-        <select id="v2TransactionCategory" class="w-full p-2 border rounded-lg">
-          <option value="">Select category</option>
-        </select>
+      <div class="bg-white border border-slate-200 rounded-lg p-3">
+        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Transfers</p>
+        <p id="dashboardMetricTransfers" class="mono text-sm font-bold text-slate-800 mt-1">EUR --</p>
       </div>
+      <div class="bg-white border border-slate-200 rounded-lg p-3">
+        <p class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Net</p>
+        <p id="dashboardMetricNet" class="mono text-sm font-bold text-slate-800 mt-1">EUR --</p>
+      </div>
+    </div>
 
-      <input type="number" id="v2TransactionAmount" step="0.01" placeholder="Amount (€)" class="w-full p-2 border rounded-lg">
-      <input type="text" id="v2TransactionNotes" placeholder="Notes (Optional)" class="w-full p-2 border rounded-lg">
+    <div class="grid grid-cols-1 xl:grid-cols-[1.2fr_.8fr] gap-4">
+      <section class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <h3 class="font-semibold text-slate-800">Recent Transactions</h3>
+            <p class="text-xs text-slate-500">Latest household activity (all types).</p>
+          </div>
+        </div>
 
-      <label class="flex items-center gap-2 text-sm text-slate-600">
-        <input type="checkbox" id="v2TransactionCleared">
-        Mark as cleared
-      </label>
+        <p id="v2TransactionEmptyHint" class="hidden text-sm text-slate-500 italic mb-2">No transactions yet in this household.</p>
+        <ul id="v2RecentTransactionList" class="divide-y divide-slate-100"></ul>
+      </section>
 
-      <div id="v2TransactionError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+      <section class="bg-white border border-slate-200 rounded-xl p-4">
+        <div class="mb-3">
+          <h3 class="font-semibold text-slate-800">Quick Add Transaction</h3>
+          <p class="text-xs text-slate-500">Fill required fields in order so nothing is missed.</p>
+        </div>
 
-      <button id="v2TransactionSubmitBtn" type="submit"
-        class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700 transition">
-        Save Transaction
-      </button>
-    </form>
-  </div>
+        <form id="v2TransactionForm" class="space-y-3">
+          <select id="v2TransactionKind" class="w-full p-2 border rounded-lg text-sm">
+            <option value="expense">Expense</option>
+            <option value="income">Income</option>
+            <option value="transfer">Transfer</option>
+          </select>
 
-  <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-    <h2 class="text-lg font-semibold mb-4 text-slate-700">Recent Activity</h2>
-    <p id="v2TransactionEmptyHint" class="hidden text-sm text-slate-500 italic">No transactions yet in this household.</p>
-    <ul id="v2RecentTransactionList" class="divide-y divide-slate-100"></ul>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <input type="date" id="v2TransactionDate" class="w-full p-2 border rounded-lg text-sm text-slate-700">
+            <input type="number" id="v2TransactionAmount" step="0.01" placeholder="Amount (€)" class="w-full p-2 border rounded-lg text-sm">
+          </div>
+
+          <input type="text" id="v2TransactionDescription" placeholder="Description / Payee" class="w-full p-2 border rounded-lg text-sm">
+
+          <select id="v2TransactionAccount" class="w-full p-2 border rounded-lg text-sm">
+            <option value="">Select source account</option>
+          </select>
+
+          <div id="v2DestinationAccountWrap" class="hidden">
+            <select id="v2TransactionDestinationAccount" class="w-full p-2 border rounded-lg text-sm">
+              <option value="">Select destination account</option>
+            </select>
+          </div>
+
+          <div id="v2CategoryWrap">
+            <select id="v2TransactionCategory" class="w-full p-2 border rounded-lg text-sm">
+              <option value="">Select category</option>
+            </select>
+          </div>
+
+          <input type="text" id="v2TransactionNotes" placeholder="Notes (Optional)" class="w-full p-2 border rounded-lg text-sm">
+
+          <label class="flex items-center gap-2 text-sm text-slate-600">
+            <input type="checkbox" id="v2TransactionCleared">
+            Mark as cleared
+          </label>
+
+          <div id="v2TransactionSetupHint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+            This household needs accounts, and expense/income transactions also need categories.
+          </div>
+          <div id="addViewAccountHint" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg p-3">
+            Add at least one account in Settings before recording transactions.
+          </div>
+
+          <div id="v2TransactionError" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-3"></div>
+
+          <button id="v2TransactionSubmitBtn" type="submit"
+            class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition">
+            Save Transaction
+          </button>
+        </form>
+      </section>
+    </div>
   </div>
 </div>

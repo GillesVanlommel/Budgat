@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budgat Mockup - Flow Drilldown</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0f1625;--panel:#151f33;--line:#2a3855;--ink:#edf2ff;--muted:#9fb0d2;--green:#22c58b;--orange:#ffb25f;--blue:#67a2ff}
+    *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 90% -10%,#213863,transparent 45%),var(--bg);font-family:"Space Grotesk",sans-serif;color:var(--ink)}
+    .app{max-width:1220px;margin:0 auto;padding:16px;display:grid;gap:12px}
+    .top{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+    .nav{display:flex;gap:6px;flex-wrap:wrap}.tab{padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:12px;color:var(--muted)}.tab.active{background:#203052;color:var(--blue);border-color:#4d6ba1}
+    .scope{display:flex;gap:6px;flex-wrap:wrap}.scope span{padding:7px 10px;border:1px solid var(--line);border-radius:999px;font-size:11px;color:var(--muted)}
+    .layout{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+    h2{margin:0 0 10px;font-size:15px}
+    .flow{display:grid;gap:8px}.r{display:grid;grid-template-columns:130px 1fr 66px;gap:8px;align-items:center;font-size:12px}
+    .track{height:10px;background:#1f2b45;border-radius:999px;overflow:hidden}.fill{height:100%}.in{background:linear-gradient(90deg,var(--green),#8ae4bf)}.out{background:linear-gradient(90deg,var(--orange),#ffd29a)}.tf{background:linear-gradient(90deg,var(--blue),#a8c9ff)}
+    .list{margin-top:10px;border:1px solid var(--line);border-radius:10px;overflow:hidden}.row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:9px 10px;border-bottom:1px solid #22304e}.row:last-child{border-bottom:0}
+    .amt{font-family:"JetBrains Mono",monospace}
+    .right{display:grid;gap:10px}.f{border:1px solid var(--line);border-radius:10px;padding:9px;font-size:12px;color:var(--muted)}
+    .ok{font-size:12px;color:#8ae4bf;background:#183b33;border:1px solid #2f6559;border-radius:9px;padding:8px;font-weight:700}
+    .btn{border:0;border-radius:10px;padding:10px 12px;background:var(--blue);color:#0e1a2f;font-weight:800}
+    @media(max-width:980px){.layout{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="nav">
+        <span class="tab active">Dashboard</span>
+        <span class="tab">History</span>
+        <span class="tab">Graphs</span>
+        <span class="tab">Settings</span>
+      </div>
+      <div class="scope">
+        <span>Household: Van Lommel Home</span>
+        <span>Working Account: Gilles Checking</span>
+        <span>Privacy: show aggregate private flows</span>
+      </div>
+    </header>
+
+    <section class="layout">
+      <article class="card">
+        <h2>Money Flow (Drilldown Start)</h2>
+        <div class="flow">
+          <div class="r"><span>Income</span><div class="track"><div class="fill in" style="width:86%"></div></div><span>€5.1k</span></div>
+          <div class="r"><span>Spending</span><div class="track"><div class="fill out" style="width:58%"></div></div><span>€3.5k</span></div>
+          <div class="r"><span>Transfers</span><div class="track"><div class="fill tf" style="width:41%"></div></div><span>€1.4k</span></div>
+        </div>
+        <div class="list">
+          <div class="row"><div><strong>Inflow detail</strong><div style="font-size:11px;color:var(--muted)">salary 79%, freelance 14%, other 7%</div></div><div class="amt">+€5,120</div></div>
+          <div class="row"><div><strong>Outflow detail</strong><div style="font-size:11px;color:var(--muted)">housing 53%, living 31%, lifestyle 16%</div></div><div class="amt" style="color:var(--orange)">-€3,470</div></div>
+          <div class="row"><div><strong>Private stream note</strong><div style="font-size:11px;color:var(--muted)">included in totals, transaction rows hidden</div></div><div class="amt">2 streams</div></div>
+        </div>
+      </article>
+
+      <aside class="card right">
+        <h2>Add Transaction</h2>
+        <div class="f">Type first (Expense / Income / Transfer)</div>
+        <div class="f">Account prefilled from working scope</div>
+        <div class="f">Amount + Date + Description</div>
+        <div class="f">Category or destination prompt (contextual)</div>
+        <div class="ok">Ready to save when all required fields are complete.</div>
+        <button class="btn">Save</button>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

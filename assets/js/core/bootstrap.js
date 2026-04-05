@@ -148,7 +148,14 @@ export async function initApp() {
       await loadV2Reconciliation();
     }
   });
-  bindV2HistoryUi();
+  bindV2HistoryUi({
+    onTransactionsChanged: async () => {
+      await loadV2TransactionView();
+      await loadV2Budget();
+      await loadV2Graphs();
+      await loadV2Reconciliation();
+    }
+  });
   bindV2BudgetUi();
   bindV2GraphsUi();
   bindV2ReconciliationUi();

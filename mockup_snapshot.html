@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Budgat Mockup - Monthly Snapshot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#f6f8fb;--panel:#fff;--line:#dde4ef;--ink:#1d2c42;--muted:#63758e;--ok:#1f9d6b;--warn:#cc7f1f;--accent:#3f6dd8}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:"Plus Jakarta Sans",sans-serif;color:var(--ink)}
+    .app{max-width:1180px;margin:0 auto;padding:16px;display:grid;gap:12px}
+    .top{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px;display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+    .tabs{display:flex;gap:6px;flex-wrap:wrap}.tab{padding:8px 12px;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:700;color:var(--muted);background:#fff}.tab.active{color:var(--accent);border-color:#bfd0f4;background:#edf3ff}
+    .scope{display:flex;gap:6px;flex-wrap:wrap}.pill{padding:7px 10px;border-radius:999px;border:1px solid var(--line);font-size:11px;color:var(--muted);font-weight:700}
+    .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:12px}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px}
+    h2{margin:0 0 10px;font-size:15px}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.kpi{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fcfdff}.kpi small{display:block;font-size:10px;color:var(--muted);text-transform:uppercase;font-weight:700}.kpi strong{font-size:16px;font-family:"IBM Plex Mono",monospace}
+    .split{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px}.block{border:1px solid var(--line);border-radius:10px;padding:10px}
+    .bar{height:9px;background:#edf1f8;border-radius:999px;overflow:hidden;margin-top:8px}.bar span{display:block;height:100%;background:#7aa2ff}
+    .tx{display:grid;gap:8px}.f{border:1px solid var(--line);border-radius:10px;padding:9px;font-size:12px;color:var(--muted)}
+    .status{font-size:12px;font-weight:700;color:var(--ok);background:#e8f8f1;border:1px solid #bfe8d4;border-radius:9px;padding:8px}
+    .btn{border:0;background:var(--accent);color:#fff;font-weight:700;padding:10px 12px;border-radius:10px}
+    .list{margin-top:8px;border:1px solid var(--line);border-radius:10px;overflow:hidden}.row{padding:9px 10px;border-bottom:1px solid #edf1f7;display:grid;grid-template-columns:1fr auto;gap:6px}.row:last-child{border-bottom:0}.amt{font-family:"IBM Plex Mono",monospace;font-weight:500}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}}
+    @media(max-width:560px){.kpis,.split{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <div class="tabs">
+        <span class="tab active">Dashboard</span>
+        <span class="tab">History</span>
+        <span class="tab">Graphs</span>
+        <span class="tab">Settings</span>
+      </div>
+      <div class="scope">
+        <span class="pill">Household: Van Lommel Home</span>
+        <span class="pill">Working Account: Shared Bills</span>
+        <span class="pill">View: All</span>
+      </div>
+    </header>
+
+    <section class="grid">
+      <article class="card">
+        <h2>Monthly Snapshot</h2>
+        <div class="kpis">
+          <div class="kpi"><small>Income</small><strong>€5,120</strong></div>
+          <div class="kpi"><small>Expenses</small><strong>€3,470</strong></div>
+          <div class="kpi"><small>Transfers</small><strong>€1,430</strong></div>
+          <div class="kpi"><small>Net</small><strong>+€1,650</strong></div>
+        </div>
+        <div class="split">
+          <div class="block">
+            <strong>Budget vs Actual</strong>
+            <div class="bar"><span style="width:78%"></span></div>
+            <p style="margin:8px 0 0;color:var(--muted);font-size:12px">78% of planned spend used</p>
+          </div>
+          <div class="block">
+            <strong>Top Category</strong>
+            <div class="bar"><span style="width:54%;background:#ffb36b"></span></div>
+            <p style="margin:8px 0 0;color:var(--muted);font-size:12px">Housing: €1,860</p>
+          </div>
+        </div>
+        <div class="list">
+          <div class="row"><div><strong>Where money comes from</strong><div style="font-size:11px;color:var(--muted)">Salary 79%, Freelance 14%, Other 7%</div></div><div class="amt">+€5,120</div></div>
+          <div class="row"><div><strong>Where money goes</strong><div style="font-size:11px;color:var(--muted)">Fixed 53%, Living 31%, Lifestyle 16%</div></div><div class="amt" style="color:var(--warn)">-€3,470</div></div>
+        </div>
+      </article>
+
+      <aside class="card">
+        <h2>Quick Add (Guided)</h2>
+        <div class="tx">
+          <div class="f">1. Type: Transfer</div>
+          <div class="f">2. Source: Shared Bills</div>
+          <div class="f">3. Destination: Savings</div>
+          <div class="f">4. Amount, Date, Description</div>
+          <div class="status">Ready to save. No required fields missing.</div>
+          <button class="btn">Save Transaction</button>
+        </div>
+      </aside>
+    </section>
+  </main>
+</body>
+</html>

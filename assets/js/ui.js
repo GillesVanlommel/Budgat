@@ -39,8 +39,8 @@ export function switchView(targetId) {
 
   const container = document.getElementById('mainContainer');
   if (container) {
-    container.classList.add('max-w-md');
-    container.classList.remove('max-w-7xl');
+    container.classList.add('max-w-7xl');
+    container.classList.remove('max-w-md');
   }
 
   const targetElement = document.getElementById(targetId);
@@ -54,11 +54,11 @@ export function switchView(targetId) {
 
   document.querySelectorAll('.nav-btn').forEach(btn => {
     if (btn.dataset.target === targetId) {
-      btn.classList.add('text-indigo-600');
-      btn.classList.remove('text-slate-400');
+      btn.classList.add('text-indigo-700', 'border-indigo-200', 'bg-indigo-50');
+      btn.classList.remove('text-slate-500', 'border-slate-300', 'bg-white');
     } else {
-      btn.classList.add('text-slate-400');
-      btn.classList.remove('text-indigo-600');
+      btn.classList.add('text-slate-500', 'border-slate-300', 'bg-white');
+      btn.classList.remove('text-indigo-700', 'border-indigo-200', 'bg-indigo-50');
     }
   });
 }

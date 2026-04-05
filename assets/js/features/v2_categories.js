@@ -33,6 +33,17 @@ function setV2CategoryError(message) {
   errorBox.classList.remove('hidden');
 }
 
+function getCategoryManageableAccounts() {
+  const household = getCurrentHousehold();
+  const memberId = household?.member_id || null;
+  if (!memberId) return [];
+
+  return getHouseholdAccounts().filter(account => {
+    if (account.archived) return false;
+    return account.owner_member_id === memberId;
+  });
+}
+
 export async function listV2HouseholdCategories(householdId, accountId = null) {
   const { data, error } = await db.rpc('list_household_categories', {
     p_household_id: householdId,
@@ -60,8 +71,9 @@ export async function hydrateV2CategoryContext() {
 
 export function renderV2Categories() {
   const { flowInput, accountInput, list, hint } = getV2CategoryUiElements();
-  const accounts = getHouseholdAccounts().filter(account => !account.archived);
-  const categories = getV2HouseholdCategories();
+  const accounts = getCategoryManageableAccounts();
+  const manageableAccountIds = new Set(accounts.map(account => account.account_id));
+  const categories = getV2HouseholdCategories().filter(category => manageableAccountIds.has(category.account_id));
   const selectedAccountId = accountInput?.value || '';
   const fallbackAccountId = accounts[0]?.account_id || '';
   const activeAccountId = accounts.some(account => account.account_id === selectedAccountId)
@@ -92,7 +104,7 @@ export function renderV2Categories() {
     if (!activeAccountId) {
       list.innerHTML = `
         <div class="text-sm text-slate-500 italic">
-          Add at least one account, then select it to manage categories.
+          You can create categories on your own accounts. Create/select one to continue.
         </div>
       `;
     } else if (visibleCategories.length === 0) {

@@ -27,7 +27,11 @@ function getV2TransactionUiElements() {
     categoryWrapper: document.getElementById('v2CategoryWrap'),
     list: document.getElementById('v2RecentTransactionList'),
     listEmptyHint: document.getElementById('v2TransactionEmptyHint'),
-    setupHint: document.getElementById('v2TransactionSetupHint')
+    setupHint: document.getElementById('v2TransactionSetupHint'),
+    metricIncome: document.getElementById('dashboardMetricIncome'),
+    metricExpense: document.getElementById('dashboardMetricExpense'),
+    metricTransfers: document.getElementById('dashboardMetricTransfers'),
+    metricNet: document.getElementById('dashboardMetricNet')
   };
 }
 
@@ -94,6 +98,45 @@ export async function createV2Transaction({
   return data || null;
 }
 
+export async function updateV2Transaction({
+  householdId,
+  transactionId,
+  transactionDate,
+  description,
+  notes = '',
+  amount,
+  isCleared = false
+}) {
+  const payload = {
+    transaction_date: transactionDate,
+    description,
+    notes: notes || null,
+    amount,
+    is_cleared: isCleared
+  };
+
+  const { data, error } = await db
+    .from('household_transactions')
+    .update(payload)
+    .eq('id', transactionId)
+    .eq('household_id', householdId)
+    .select('id')
+    .single();
+
+  if (error) throw error;
+  return data || null;
+}
+
+export async function deleteV2Transaction({ householdId, transactionId }) {
+  const { error } = await db
+    .from('household_transactions')
+    .delete()
+    .eq('id', transactionId)
+    .eq('household_id', householdId);
+
+  if (error) throw error;
+}
+
 export async function hydrateV2TransactionContext() {
   const household = getCurrentHousehold();
 
@@ -136,11 +179,16 @@ export function renderV2TransactionForm() {
   } = getV2TransactionUiElements();
 
   const accounts = getHouseholdAccounts().filter(account => !account.archived);
+  const currentMemberId = getCurrentHousehold()?.member_id || null;
+  const directlyVisibleAccounts = accounts.filter(account => (
+    !account.owner_member_id || account.owner_member_id === currentMemberId
+  ));
   const kind = kindInput?.value || 'expense';
+  const selectableSourceAccounts = kind === 'transfer' ? accounts : directlyVisibleAccounts;
   const selectedSourceId = accountInput?.value || '';
   const selectedDestinationId = destinationAccountInput?.value || '';
   const selectedCategoryId = categoryInput?.value || '';
-  const fallbackSourceId = accounts[0]?.account_id || '';
+  const fallbackSourceId = selectableSourceAccounts[0]?.account_id || '';
 
   if (dateInput && !dateInput.value) {
     dateInput.value = getTodayString();
@@ -149,11 +197,11 @@ export function renderV2TransactionForm() {
   if (accountInput) {
     accountInput.innerHTML = `
       <option value="">Select source account</option>
-      ${accounts.map(account => `
+      ${selectableSourceAccounts.map(account => `
         <option value="${account.account_id}">${account.name}</option>
       `).join('')}
     `;
-    accountInput.value = accounts.some(account => account.account_id === selectedSourceId)
+    accountInput.value = selectableSourceAccounts.some(account => account.account_id === selectedSourceId)
       ? selectedSourceId
       : fallbackSourceId;
   }
@@ -204,8 +252,28 @@ export function renderV2TransactionForm() {
 }
 
 export function renderV2RecentTransactions() {
-  const { list, listEmptyHint } = getV2TransactionUiElements();
+  const {
+    list,
+    listEmptyHint,
+    metricIncome,
+    metricExpense,
+    metricTransfers,
+    metricNet
+  } = getV2TransactionUiElements();
   const transactions = getCurrentHousehold() ? getV2RecentTransactions() : [];
+  const totals = transactions.reduce((acc, tx) => {
+    const amount = Number(tx.amount || 0);
+    if (tx.kind === 'income') acc.income += amount;
+    if (tx.kind === 'expense') acc.expense += amount;
+    if (tx.kind === 'transfer') acc.transfers += amount;
+    return acc;
+  }, { income: 0, expense: 0, transfers: 0 });
+  const net = totals.income - totals.expense;
+
+  if (metricIncome) metricIncome.textContent = `EUR ${totals.income.toFixed(2)}`;
+  if (metricExpense) metricExpense.textContent = `EUR ${totals.expense.toFixed(2)}`;
+  if (metricTransfers) metricTransfers.textContent = `EUR ${totals.transfers.toFixed(2)}`;
+  if (metricNet) metricNet.textContent = `EUR ${net.toFixed(2)}`;
 
   if (!list) return;
 
@@ -229,7 +297,7 @@ export function renderV2RecentTransactions() {
         : 'bg-blue-50 text-blue-700 border-blue-100';
 
     return `
-      <li class="py-3 flex items-center justify-between border-b border-slate-100 last:border-0">
+      <li class="py-3 flex items-center justify-between border-b border-slate-100 last:border-0" data-transaction-id="${transaction.transaction_id}">
         <div class="min-w-0 pr-3">
           <div class="flex items-center gap-2 mb-1">
             <span class="text-[10px] px-2 py-0.5 rounded-full border ${kindStyle}">${transaction.kind}</span>
@@ -241,6 +309,10 @@ export function renderV2RecentTransactions() {
         </div>
         <div class="text-right shrink-0">
           <div class="font-mono font-bold text-slate-800">€${Number(transaction.amount || 0).toFixed(2)}</div>
+          <div class="mt-2 flex items-center justify-end gap-2">
+            <button type="button" class="text-xs px-2 py-1 rounded-md border border-slate-300 text-slate-600 hover:bg-slate-50" data-transaction-action="edit">Edit</button>
+            <button type="button" class="text-xs px-2 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50" data-transaction-action="delete">Delete</button>
+          </div>
         </div>
       </li>
     `;
@@ -283,7 +355,8 @@ export function bindV2TransactionUi({ onTransactionsChanged }) {
     destinationAccountInput,
     categoryInput,
     clearedInput,
-    submitBtn
+    submitBtn,
+    list
   } = getV2TransactionUiElements();
 
   if (kindInput) {
@@ -340,4 +413,92 @@ export function bindV2TransactionUi({ onTransactionsChanged }) {
       if (submitBtn) submitBtn.disabled = false;
     }
   };
+
+  if (list) {
+    list.onclick = async (event) => {
+      const actionButton = event.target.closest('[data-transaction-action]');
+      if (!actionButton) return;
+
+      const row = actionButton.closest('[data-transaction-id]');
+      const transactionId = row?.dataset.transactionId;
+      const action = actionButton.dataset.transactionAction;
+      const household = getCurrentHousehold();
+
+      if (!transactionId || !household?.household_id) return;
+
+      const transaction = getV2RecentTransactions().find(tx => tx.transaction_id === transactionId);
+      if (!transaction) return;
+
+      setV2TransactionError('');
+      actionButton.disabled = true;
+
+      try {
+        if (action === 'delete') {
+          const confirmed = window.confirm('Delete this transaction?');
+          if (!confirmed) return;
+
+          await deleteV2Transaction({
+            householdId: household.household_id,
+            transactionId
+          });
+        }
+
+        if (action === 'edit') {
+          const nextDateInput = window.prompt('Transaction date (YYYY-MM-DD)', transaction.transaction_date || '');
+          if (nextDateInput === null) return;
+          const nextDescriptionInput = window.prompt('Description', transaction.description || '');
+          if (nextDescriptionInput === null) return;
+          const nextAmountRawInput = window.prompt('Amount', String(transaction.amount || ''));
+          if (nextAmountRawInput === null) return;
+          const nextNotesInput = window.prompt('Notes (optional)', transaction.notes || '');
+          if (nextNotesInput === null) return;
+          const nextClearedRawInput = window.prompt('Cleared? (yes/no)', transaction.is_cleared ? 'yes' : 'no');
+          if (nextClearedRawInput === null) return;
+
+          const nextDate = nextDateInput;
+          const nextDescription = nextDescriptionInput;
+          const nextAmountRaw = nextAmountRawInput;
+          const nextNotes = nextNotesInput;
+          const nextClearedRaw = nextClearedRawInput;
+
+          const nextAmount = Number(nextAmountRaw);
+          const normalizedCleared = nextClearedRaw.trim().toLowerCase();
+          const nextCleared = normalizedCleared === 'yes' || normalizedCleared === 'y' || normalizedCleared === 'true' || normalizedCleared === '1';
+
+          if (!nextDate || Number.isNaN(new Date(nextDate).getTime())) {
+            throw new Error('Valid transaction date is required (YYYY-MM-DD).');
+          }
+
+          if (!nextDescription.trim()) {
+            throw new Error('Description is required.');
+          }
+
+          if (!Number.isFinite(nextAmount) || nextAmount <= 0) {
+            throw new Error('Amount must be greater than zero.');
+          }
+
+          await updateV2Transaction({
+            householdId: household.household_id,
+            transactionId,
+            transactionDate: nextDate,
+            description: nextDescription.trim(),
+            notes: nextNotes.trim(),
+            amount: nextAmount,
+            isCleared: nextCleared
+          });
+        }
+
+        await hydrateV2TransactionContext();
+        renderV2RecentTransactions();
+
+        if (onTransactionsChanged) {
+          await onTransactionsChanged();
+        }
+      } catch (error) {
+        setV2TransactionError(error.message || 'Failed to update transaction.');
+      } finally {
+        actionButton.disabled = false;
+      }
+    };
+  }
 }
